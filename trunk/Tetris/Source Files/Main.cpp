@@ -2,7 +2,7 @@
 #include <cstdlib>		
 #include <ctime>		
 #include "GL/glut.h"
-
+#include "Tetris.h"
 //Keyboard function
 //When key is pressed, perform action here
 void keyboard(unsigned char key, int x, int y) {
