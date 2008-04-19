@@ -1,8 +1,6 @@
 #include <iostream>		
-#include <cstdlib>		//for rand
-#include <ctime>		//for random
-#include <strstream>	
-#include <stdio.h>
+#include <cstdlib>		
+#include <ctime>		
 #include "GL/glut.h"
 
 //Keyboard function
@@ -19,6 +17,13 @@ void display(void) {
 	glFlush();
 }
 
+/*Initialization function
+ * Initialize material property, light source, 
+ * lighting model, and depth buffer.
+*/
+void init(void) {
+	
+}
 //Main function
 //Sets up window and callback funcions
 int main(int argc, char **argv) {
@@ -30,7 +35,7 @@ int main(int argc, char **argv) {
 	glutCreateWindow("Tetris");
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
-
+	init();
 	glutMainLoop();
 	return 0;
 }
