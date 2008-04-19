@@ -6,6 +6,8 @@ Block::Block(){
 }
 
 Block::Block(blockType type){
+	currentX = -1;
+	currentY = -1;
 	myBlock = type;
 	switch(type){
 	case(I):myColor = C; 
@@ -72,5 +74,10 @@ void Block::changeColor(colorType color){
 	}
 }
 
+//Update position
+void Block::updatePosition(int x, int y){
+	currentX = x;
+	currentY = y;
+}
 
 

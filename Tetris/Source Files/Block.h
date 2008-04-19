@@ -35,6 +35,7 @@ private:
 	blockType myBlock;
 	colorType myColor;
 	Matrix blockMatrix;
+	//Position is upper left of 4x4 matrix
 	int currentX, currentY;
 	
 	
@@ -50,8 +51,12 @@ public:
 	colorType getColorType(){return myColor;};
 	int getCurrentX(){return currentX;};
 	int getCurrentY(){return currentY;};
+	Matrix getBlockMatrix(){return blockMatrix;};
 	//Mutator Function
 	void changeColor(colorType);
+	void setCurrentX(int x){currentX = x;};
+	void setCurrentY(int y){currentY = y;};
+	void updatePosition(int, int);
 	
 	
 
