@@ -52,6 +52,7 @@ public:
 	int getCurrentX(){return currentX;};
 	int getCurrentY(){return currentY;};
 	Matrix getBlockMatrix(){return blockMatrix;};
+	blockType getBlockType(int);
 	//Mutator Function
 	void changeColor(colorType);
 	void setCurrentX(int x){currentX = x;};
