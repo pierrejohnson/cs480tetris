@@ -9,54 +9,63 @@ Block::Block(blockType type){
 	currentX = -1;
 	currentY = -1;
 	myBlock = type;
+	int color;
 	switch(type){
 	case(I):myColor = C; 
-		blockMatrix.setMatrix(	E,	E,	myColor,	E,
-								E,	E,	myColor,	E,
-								E,	E,	myColor,	E,
-								E,	E,	myColor,	E );
+		color = myColor;
+		blockMatrix.setMatrix(	0,	0,	0,	0,
+								color,	color,	color,	color,
+								0,	0,	0,	0,
+								0,	0,	0,	0 );
 		break;
 	case(L):myColor = Or;
-		blockMatrix.setMatrix(	E,	myColor,	E,		E,
-								E,	myColor,	E,		E,
-								E,	myColor,	E,		E,
-								E,	myColor,	myColor,E );
+	color = myColor;
+		blockMatrix.setMatrix(	0,	0,	0,		0,
+								0,	color,	0,		0,
+								0,	color,	0,		0,
+								0,	color,	color,0 );
 		break;
 	case(J):myColor = B;
-		blockMatrix.setMatrix(	E,	E,		myColor,	E,
-								E,	E,		myColor,	E,
-								E,	E,		myColor,	E,
-								E,	myColor,myColor,	E );
+	color = myColor;
+		blockMatrix.setMatrix(	0,	0,		0,	0,
+								0,	0,		color,	0,
+								0,	0,		color,	0,
+								0,	color,color,	0 );
 		break;
 	case(O):myColor = Y;
-		blockMatrix.setMatrix(	E,E,		E,		E,
-								E,myColor,	myColor,E,
-								E,myColor,	myColor,E,
-								E,E,		E,		E );
+	color = myColor;
+		blockMatrix.setMatrix(	0,0,		0,		0,
+								0,color,	color,0,
+								0,color,	color,0,
+								0,0,		0,		0 );
 		break;
 	case(S):myColor = G;
-		blockMatrix.setMatrix(	E,E,E,E,
-								E,E,myColor,myColor,
-								E,myColor,myColor,E,
-								E,E,E,E );
+	color = myColor;
+		blockMatrix.setMatrix(	0,0,0,0,
+								0,0,color,color,
+								0,color,color,0,
+								0,0,0,0 );
 		break;
 	case(T):myColor = P;
-		blockMatrix.setMatrix(	E,E,E,E,
-								E,E,myColor,E,
-								E,myColor,myColor,myColor,
-								E,E,E,E );
+	color = myColor;
+		blockMatrix.setMatrix(	0,0,0,0,
+								0,0,color,0,
+								0,color,color,color,
+								0,0,0,0 );
 		break;
 	case(Z):myColor = R;
-		blockMatrix.setMatrix(	E,E,E,E,
-								E,myColor,myColor,E,
-								E,E,myColor,myColor,
-								E,E,E,E );
+	color = myColor;
+		blockMatrix.setMatrix(	0,0,0,0,
+								0,color,color,0,
+								0,0,color,color,
+								0,0,0,0 );
 		break;
 	default:myColor = E;
-		blockMatrix.setMatrix(	E,E,E,E,
-								E,E,E,E,
-								E,E,E,E,
-								E,E,E,E );
+	color = myColor;
+		blockMatrix.setMatrix(	0,0,0,0,
+								0,0,0,0,
+								0,0,0,0,
+								0,0,0,0 );
 		break;
 	}
 }
@@ -67,7 +76,7 @@ void Block::changeColor(colorType color){
 	//Update block Matrix
 	for(int i=0;i<4;i++){
 		for(int j=0;j<4;j++){
-			if(blockMatrix.getCell(i,j)!=E){
+			if(blockMatrix.getCell(i,j)!=0){
 				blockMatrix.setCell(i,j,myColor);
 			}
 		}
@@ -80,4 +89,23 @@ void Block::updatePosition(int x, int y){
 	currentY = y;
 }
 
-
+blockType Block::getBlockType(int num){
+	switch(num){
+	case 0:
+		return I;
+	case 1:
+		return L;
+	case 2:
+		return J;
+	case 3:
+		return O;
+	case 4:
+		return S;
+	case 5:
+		return T;
+	case 6:
+		return Z;
+	default:
+		break;
+	}
+}
