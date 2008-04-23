@@ -60,11 +60,16 @@ void Tetris::makePlayMatrix(Block block) {
 	clearPlayMatrix();	
 	
 	int x = block.getCurrentX();	//ex: 14
+	cout<<endl<<"block current X: " << x;
+	
 	int y = block.getCurrentY();
+	cout<<endl<<"block current Y: " << y;
+	
 	
 	for (int i = 0; i<4; i++) {
 		for (int j = 0; j<4; j++) {
-			if ((block.getBlockMatrix().getCell(i, j)!=0) && (i+y>0) && (j+x>0)) {
+			//for some reason the x value can be = to -1 on the left side... this seems to fix it.
+			if ((block.getBlockMatrix().getCell(i, j)!=0) && (i+y>0) && (j+x>-2)) {
 				playMatrix[i+y][j+x] = block.getBlockMatrix().getCell(i, j);
 			}	
 		}
@@ -85,20 +90,21 @@ void Tetris::makePlayMatrix(Block block) {
 
 //Make play matrix
 void Tetris::moveBlock() {
-	cout<<endl<<"fieldmatrix"<<endl;
+	cout<<endl<<"call to game.moveBlock()"<<endl;
 	for (int i = 0; i<20; i++) {
+		cout<<endl<<"FM: "; 
 		for (int j = 0; j<10; j++) {
 			
 				fieldMatrix[i][j]+=getPlayCell(i, j);
 				cout<<fieldMatrix[i][j];
 				
 		}
-		cout<<endl;
+		
 	}
 	currentBlock = NULL;
 }
 
-//Check if Block is in play area using a x and y offset
+//Check if Block is within the boundaries of the play area
 bool Tetris::isIn(Block block, int xoff, int yoff) {
 	bool in = true;
 	int x = block.getCurrentX()+xoff;
@@ -192,6 +198,10 @@ void Tetris::getBlock() {
 //Move block left
 bool Tetris::moveLeft() {
 	bool success = false;
+	
+	
+	
+	//might have a bug here with the checking "isNoInter()
 	cout<<endl<<"Call to game.moveLeft()"<<endl;
 	currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
 	if (isIn(*currentBlock, 0, 0)&&isNoInter()) {
