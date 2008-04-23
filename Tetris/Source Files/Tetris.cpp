@@ -3,7 +3,6 @@
 //Test functionality
 void Tetris::test() {
 	clearPlayMatrix();
-	clearFieldMatrix();
 	getBlock();
 	makePlayMatrix(*currentBlock);
 }
@@ -78,7 +77,7 @@ void Tetris::moveBlock() {
 	}
 }
 
-//Check if Block is in play area with offset
+//Check if Block is in play area using a x and y offset
 bool Tetris::isIn(Block block, int xoff, int yoff) {
 	bool in = true;
 	int x = block.getCurrentX()+xoff;
@@ -89,7 +88,8 @@ bool Tetris::isIn(Block block, int xoff, int yoff) {
 		for (int j = 0; j<4; j++) {
 			int num = block.getBlockMatrix().getCell(i, j);
 			cout<<num;
-			if ((num!=0) && (i+y>height-1) || (j+x>width-1) || (i+y<0) || (j+x<0)) {
+			if ((num!=0) && ((i+y>height-1) || (j+x>width-1) || (i+y<0) || (j+x<0))) {
+				cout<<"!";
 				in = false;
 			}
 		}
@@ -104,7 +104,7 @@ bool Tetris::isNoInter() {
 	makePlayMatrix(*currentBlock);
 	for (int i = 0; i<10; i++) {
 		for (int j = 0; j<20; j++) {
-			if(playMatrix[i][j] && fieldMatrix[i][j]!=0) {
+			if(playMatrix[i][j]!=0 && fieldMatrix[i][j]!=0) {
 				ok = false;
 			}
 		}
@@ -148,10 +148,12 @@ blockType Tetris::randBlk() {
 //Generate new Block
 void Tetris::getBlock() {
 
+	//for the very first run
 	if (currentBlock == NULL && nextBlock == NULL) {
 		currentBlock = new Block(randBlk());
 		nextBlock = new Block(randBlk());
 		currentBlock->updatePosition(4, 0);
+	//then it just keeps changing
 	} else if (currentBlock == NULL) {
 		currentBlock = nextBlock;
 		nextBlock = new Block(randBlk());
@@ -162,12 +164,11 @@ void Tetris::getBlock() {
 //Move block left
 bool Tetris::moveLeft() {
 	bool success = false;
-	currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
-	//	if(isIn(*currentBlock,-1,0) && isNoInter(*currentBlock,-1,0)){
 	if (isIn(*currentBlock, -1, 0)) {
+		currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
 		cout<<"Move left"<<endl;
 		success = true;
-	}
+	}	
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
 	return success;
@@ -175,7 +176,6 @@ bool Tetris::moveLeft() {
 //Move block right
 bool Tetris::moveRight() {
 	bool success = false;
-	//	if(isIn(*currentBlock,1,0) && isNoInter(*currentBlock,1,0)){
 	if (isIn(*currentBlock, 1, 0)) {
 		cout<<"Move right"<<endl;
 		currentBlock->setCurrentX((currentBlock->getCurrentX())+1);
@@ -199,7 +199,7 @@ bool Tetris::moveUp() {
 //Move block down
 bool Tetris::moveDown() {
 	bool success = false;
-	//	if(isIn(*currentBlock,0,1) && isNoInter(*currentBlock,0,1)){
+	//if the current block is within an x offset of 0, and a y offset of 1
 	if (isIn(*currentBlock, 0, 1)) {
 		currentBlock->setCurrentY((currentBlock->getCurrentY())+1);
 		success = true;

@@ -1,18 +1,20 @@
 #include <iostream>		
 #include <cstdlib>		
 #include <ctime>		
-#include "GL/glut.h"
-#include "GL/glu.h"
+//#include "GL/glut.h"
+//#include "GL/glu.h"
 #include "Tetris.h"
-
+#include <GLUT/glut.h>
+#include <OpenGL/glu.h>
 Tetris game;
 
 //Timer function
 //Calls the game update function
 void update(int value){
-	//game.test();
-	game.update();
+	game.test();
+	//game.update();
 	glutPostRedisplay();
+	//every 1000 ms (1s) the "update(1)" fn is called
 	glutTimerFunc(1000, update, 1);	
 }
 
@@ -23,6 +25,7 @@ void update(int value){
 void init(void) {
 	
 	game.Initialize();
+	//every 1 seconds calls the update function
 	glutTimerFunc(1000, update, 1);
 	
 }
@@ -45,6 +48,10 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 's':
 		game.moveDown();
+		glutPostRedisplay();
+		break;
+	case 'o':
+		game.update();
 		glutPostRedisplay();
 		break;
 	default:

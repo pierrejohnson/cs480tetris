@@ -3,7 +3,7 @@
 #include <iostream>		
 #include <cstdlib>		
 #include <ctime>			
-#include "GL/glut.h"
+#include "GLUT/glut.h"
 #include "Matrix.h"
 
 using namespace std;
