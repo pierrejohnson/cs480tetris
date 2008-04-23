@@ -170,9 +170,10 @@ void Tetris::getBlock() {
 //Move block left
 bool Tetris::moveLeft() {
 	bool success = false;
+	cout<<endl<<"Call to game.moveLeft()"<<endl;
 	currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
 	if (isIn(*currentBlock, 0, 0)&&isNoInter()) {
-		cout<<"Move left"<<endl;
+		cout<<"Moving left"<<endl;
 		success = true;
 	}else
 		currentBlock->setCurrentX((currentBlock->getCurrentX())+1);
@@ -183,9 +184,10 @@ bool Tetris::moveLeft() {
 //Move block right
 bool Tetris::moveRight() {
 	bool success = false;
+	cout<<endl<<"Call to game.moveRight()"<<endl;
 	currentBlock->setCurrentX((currentBlock->getCurrentX())+1);
 	if (isIn(*currentBlock, 0, 0)&&isNoInter()) {
-		cout<<"Move right"<<endl;
+		cout<<"Moving right"<<endl;
 		success = true;
 	}else
 		currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
@@ -193,9 +195,10 @@ bool Tetris::moveRight() {
 	makePlayMatrix(*currentBlock);
 	return success;
 }
-//Move block up
+//Move block up ..... might be out of date
 bool Tetris::moveUp() {
 	bool success = false;
+	cout<<endl<<"Call to game.moveUp()"<<endl;
 	currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
 	if (isIn(*currentBlock, 0, 0)) {
 		success = true;
@@ -208,12 +211,16 @@ bool Tetris::moveUp() {
 //Move block down
 bool Tetris::moveDown() {
 	bool success = false;
+	cout<<endl<<"Call to game.moveDown()"<<endl;
 	//if the current block is within an x offset of 0, and a y offset of 1
 	currentBlock->setCurrentY((currentBlock->getCurrentY())+1);
 	if (isIn(*currentBlock, 0, 0) && isNoInter()) {
+		cout<<endl<<"Moving Down from moveDown()"<<endl;
 		success = true;
-	}else
+	}else{
 		currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
+	cout<<endl<<"trying to move it back up from moveDown()"<<endl;
+	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
 	return success;
@@ -222,6 +229,7 @@ bool Tetris::moveDown() {
 //Rotate block CW
 bool Tetris::rotateCW() {
 	bool success = true;
+	cout<<endl<<"Call to game.rotateCW()"<<endl;
 	//Rotate
 	currentBlock->rotateCW();
 	//Check if it is still in playing field
@@ -258,6 +266,7 @@ bool Tetris::rotateCW() {
 bool Tetris::rotateCCW() {
 	bool success = true;
 	//Rotate
+	cout<<endl<<"Call to game.rotateCCW()"<<endl;
 	currentBlock->rotateCCW();
 	//Check if it is still in playing field
 	if (!isIn(*currentBlock,0,0)) {
@@ -318,8 +327,10 @@ bool Tetris::update() {
 	//If it can't move down
 	else if (!flag) {
 		cout<<"Stuck"<<endl;
+
 		//Merge Tetris matrix
 		moveBlock();
+		getBlock();
 		//Check for line here
 		checkForLines();
 		//updateScore(lines);
