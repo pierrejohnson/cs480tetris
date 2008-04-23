@@ -1,11 +1,11 @@
 #include <iostream>		
 #include <cstdlib>		
 #include <ctime>		
-#include "GL/glut.h"
-#include "GL/glu.h"
+//#include "GL/glut.h"
+//#include "GL/glu.h"
 #include "Tetris.h"
-//#include <GLUT/glut.h>
-//#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+#include <OpenGL/glu.h>
 Tetris game;
 
 //Timer function
