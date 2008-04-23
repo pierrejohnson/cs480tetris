@@ -53,18 +53,34 @@ void Tetris::clearFieldMatrix() {
 	}
 }
 
+//create a copy of an empty matrix with our block into it
 //Make draw matrix
 void Tetris::makePlayMatrix(Block block) {
-	clearPlayMatrix();
-	int x = block.getCurrentX();
+	cout<<endl<<"call to makePlayMatrix()"<<endl;
+	clearPlayMatrix();	
+	
+	int x = block.getCurrentX();	//ex: 14
 	int y = block.getCurrentY();
+	
 	for (int i = 0; i<4; i++) {
 		for (int j = 0; j<4; j++) {
-			if (block.getBlockMatrix().getCell(i, j)!=0 && i+y>-1 && j+x>-1) {
+			if ((block.getBlockMatrix().getCell(i, j)!=0) && (i+y>0) && (j+x>0)) {
 				playMatrix[i+y][j+x] = block.getBlockMatrix().getCell(i, j);
 			}	
 		}
 	}
+	//printing the playmatrix
+	for (int i = 0; i<20; i++) {
+		cout<<endl<<"playmatrix: ";
+		for (int j = 0; j<10; j++) {
+			cout<<playMatrix[i][j];
+		}
+	}
+	
+	
+
+	
+	
 }
 
 //Make play matrix
@@ -106,13 +122,19 @@ bool Tetris::isIn(Block block, int xoff, int yoff) {
 //Check if any blocks are interferring with offset
 bool Tetris::isNoInter() {
 	bool ok = true;
+	
 	makePlayMatrix(*currentBlock);
-	for (int i = 0; i<10; i++) {
-		for (int j = 0; j<20; j++) {
-			if(playMatrix[i][j]>0 && fieldMatrix[i][j]>0) {
-				cout<<"\n Interference!"<<endl;
+	
+	for (int i = 0; i<20; i++) {
+		cout<<endl<<"fieldmatrix: "; 
+		for (int j = 0; j<10; j++) {
+			//if we have a conflict
+			if((playMatrix[i][j]>0) && (fieldMatrix[i][j]>0)) {
+				cout<<"!"<<endl;
 				ok = false;
-			}
+			}else 
+				cout <<fieldMatrix[i][j];
+			
 		}
 	}
 	return ok;
