@@ -118,14 +118,14 @@ void display(void) {
 			}
 		}
 	}
-	cout<<endl;
+	//cout<<endl;
 	for(int i = 0;i<20;i++){
-		cout<<endl;
+		//cout<<endl;
 		for(int j = 0; j<10;j++){
 			//int color = game.getDrawCell(i,j);
 			int color = game.getPlayCell(i,j);
 			glColor3f(color*0.4f, color*0.1f, color*0.6f);
-			cout<<color;
+			//cout<<color;
 			GLfloat x = j;
 			GLfloat y = 18-i;
 			if(color>0 && color<8){
@@ -138,7 +138,23 @@ void display(void) {
 			}
 		}
 	}
-	
+	for(int i = 0;i<20;i++){
+			for(int j = 0; j<10;j++){
+				//int color = game.getDrawCell(i,j);
+				int color = game.getFieldCell(i,j);
+				glColor3f(color*0.4f, color*0.1f, color*0.6f);
+				GLfloat x = j;
+				GLfloat y = 18-i;
+				if(color>0 && color<8){
+					glLoadIdentity();
+					glPushMatrix();
+					glTranslated(x*0.1-.5,y*0.1-0.8,-1);
+					glScalef(0.1f,0.1f,0.1f);
+					glutSolidCube(1.0f);
+					glPopMatrix();
+				}
+			}
+		}
 	glFlush();
 }
 

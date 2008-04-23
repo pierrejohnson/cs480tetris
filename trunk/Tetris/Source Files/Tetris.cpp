@@ -2,12 +2,10 @@
 
 //Test functionality
 void Tetris::test() {
-	clearDrawMatrix();
 	clearPlayMatrix();
 	clearFieldMatrix();
 	getBlock();
 	makePlayMatrix(*currentBlock);
-	//makeDrawMatrix();
 }
 
 //Default Constructor
@@ -20,9 +18,9 @@ Tetris::Tetris() {
 		for (int j = 0; j < 10; j++) {
 			playMatrix[i][j] = 0;
 			fieldMatrix[i][j] = 0;
-			drawMatrix[i][j] = 0;
 		}
 	}
+	getBlock();
 }
 
 //Initialize
@@ -35,7 +33,6 @@ void Tetris::Initialize() {
 		for (int j = 0; j < 10; j++) {
 			playMatrix[i][j] = 0;
 			fieldMatrix[i][j] = 0;
-			drawMatrix[i][j] = 0;
 		}
 	}
 	getBlock();
@@ -56,25 +53,17 @@ void Tetris::clearFieldMatrix() {
 		}
 	}
 }
-void Tetris::clearDrawMatrix() {
-	for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < 10; j++) {
-			drawMatrix[i][j] = 0;
-		}
-	}
-}
 
 //Make draw matrix
-void Tetris::makeDrawMatrix() {
-	clearDrawMatrix();
-	for (int i = 0; i<20; i++) {
-		for (int j = 0; j<10; j++) {
-			if (playMatrix[i][j]!=0) {
-				drawMatrix[i][j] = playMatrix[i][j];
-			}
-			if (fieldMatrix[i][j]!=0) {
-				drawMatrix[i][j] = fieldMatrix[i][j];
-			}
+void Tetris::makePlayMatrix(Block block) {
+	clearPlayMatrix();
+	int x = block.getCurrentX();
+	int y = block.getCurrentY();
+	for (int i = 0; i<4; i++) {
+		for (int j = 0; j<4; j++) {
+			if (block.getBlockMatrix().getCell(i, j)!=0 && i+y>-1 && j+x>-1) {
+				playMatrix[i+y][j+x] = block.getBlockMatrix().getCell(i, j);
+			}	
 		}
 	}
 }
@@ -89,37 +78,6 @@ void Tetris::moveBlock() {
 	}
 }
 
-void Tetris::makePlayMatrix(Block block) {
-	clearPlayMatrix();
-	int x = block.getCurrentX();
-	int y = block.getCurrentY();
-	for (int i = 0; i<4; i++) {
-		for (int j = 0; j<4; j++) {
-			if (block.getBlockMatrix().getCell(i, j)!=0 && i+y>-1 && j+x>-1) {
-				playMatrix[i+y][j+x] = block.getBlockMatrix().getCell(i, j);
-			}	
-		}
-	}
-}
-
-//Check if Block is in play area
-bool Tetris::isIn(Block block) {
-	bool in = true;
-	int x = block.getCurrentX();
-	int y = block.getCurrentY();
-	for (int i = 0; i<4; i++) {
-		for (int j = 0; j<4; j++) {
-			int num = block.getBlockMatrix().getCell(i, j);
-			if (((num!=0)) && (i+y>height-1) || (j+x>width-1) || (i+y<0) || (j
-					+x<0)) {
-				in = false;
-			}
-		}
-	}
-
-	return true;
-}
-
 //Check if Block is in play area with offset
 bool Tetris::isIn(Block block, int xoff, int yoff) {
 	bool in = true;
@@ -131,8 +89,7 @@ bool Tetris::isIn(Block block, int xoff, int yoff) {
 		for (int j = 0; j<4; j++) {
 			int num = block.getBlockMatrix().getCell(i, j);
 			cout<<num;
-			if (((num!=0)) && (i+y>height-1) || (j+x>width-1) || (i+y<0) || (j
-					+x<0)) {
+			if ((num!=0) && (i+y>height-1) || (j+x>width-1) || (i+y<0) || (j+x<0)) {
 				in = false;
 			}
 		}
@@ -141,29 +98,13 @@ bool Tetris::isIn(Block block, int xoff, int yoff) {
 	return in;
 }
 
-//Check if any blocks are interferring
-bool Tetris::isNoInter(Block block) {
-	bool ok = true;
-	int x = block.getCurrentX();
-	int y = block.getCurrentY();
-	for (int i = 0; i<4; i++) {
-		for (int j = 0; j<4; j++) {
-			if (block.getBlockMatrix().getCell(i, j)!=0 && fieldMatrix[i+y][j+x]!=0) {
-				ok = false;
-			}
-		}
-	}
-	return ok;
-}
-
 //Check if any blocks are interferring with offset
-bool Tetris::isNoInter(Block block, int xoff, int yoff) {
+bool Tetris::isNoInter() {
 	bool ok = true;
-	int x = block.getCurrentX()+xoff;
-	int y = block.getCurrentY()+yoff;
-	for (int i = 0; i<4; i++) {
-		for (int j = 0; j<4; j++) {
-			if (block.getBlockMatrix().getCell(i, j)!=0 && fieldMatrix[i+y][j+x]!=0) {
+	makePlayMatrix(*currentBlock);
+	for (int i = 0; i<10; i++) {
+		for (int j = 0; j<20; j++) {
+			if(playMatrix[i][j] && fieldMatrix[i][j]!=0) {
 				ok = false;
 			}
 		}
@@ -221,16 +162,14 @@ void Tetris::getBlock() {
 //Move block left
 bool Tetris::moveLeft() {
 	bool success = false;
+	currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
 	//	if(isIn(*currentBlock,-1,0) && isNoInter(*currentBlock,-1,0)){
 	if (isIn(*currentBlock, -1, 0)) {
 		cout<<"Move left"<<endl;
-		currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
 		success = true;
 	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
-	clearDrawMatrix();
-	makeDrawMatrix();
 	return success;
 }
 //Move block right
@@ -244,21 +183,17 @@ bool Tetris::moveRight() {
 	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
-	clearDrawMatrix();
-	makeDrawMatrix();
 	return success;
 }
 //Move block up
 bool Tetris::moveUp() {
 	bool success = false;
-	if (isIn(*currentBlock, 0, -1) && isNoInter(*currentBlock, 0, -1)) {
+	if (isIn(*currentBlock, 0, -1)) {
 		currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
 		success = true;
 	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
-	clearDrawMatrix();
-	makeDrawMatrix();
 	return success;
 }
 //Move block down
@@ -271,8 +206,6 @@ bool Tetris::moveDown() {
 	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
-	clearDrawMatrix();
-	makeDrawMatrix();
 	return success;
 }
 
@@ -282,17 +215,17 @@ bool Tetris::rotateCW() {
 	//Rotate
 	currentBlock->rotateCW();
 	//Check if it is still in playing field
-	if (!isIn(*currentBlock)) {
+	if (!isIn(*currentBlock,0,0)) {
 		//If not, try to move it
 		if (currentBlock->getCurrentX()<0) {
 			success = moveRight();
-			if (!isIn(*currentBlock)) {
+			if (!isIn(*currentBlock,0,0)) {
 				if (currentBlock->getCurrentX()<0)
 					success = moveRight();
 			}
 		} else if (currentBlock->getCurrentX()>6) {
 			success = moveLeft();
-			if (!isIn(*currentBlock)) {
+			if (!isIn(*currentBlock,0,0)) {
 				if (currentBlock->getCurrentX()>6)
 					success = moveLeft();
 			}
@@ -302,14 +235,12 @@ bool Tetris::rotateCW() {
 			currentBlock->rotateCCW();
 			success = false;
 		}
-	} else if (!isNoInter(*currentBlock)) {//In playfield, but has interference
+	} else if (!isNoInter()) {//In playfield, but has interference
 		currentBlock->rotateCCW(); //Interference, can't rotate
 		success = false;
 	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
-	clearDrawMatrix();
-	makeDrawMatrix();
 	return success;
 }
 
@@ -319,17 +250,17 @@ bool Tetris::rotateCCW() {
 	//Rotate
 	currentBlock->rotateCCW();
 	//Check if it is still in playing field
-	if (!isIn(*currentBlock)) {
+	if (!isIn(*currentBlock,0,0)) {
 		cout<<"Rotating"<<endl;
 		//If not, try to move it
 		if (currentBlock->getCurrentX()<0) {
 			success = moveRight();
-			if (!isIn(*currentBlock)) {
+			if (!isIn(*currentBlock,0,0)) {
 				success = moveRight();
 			}
 		} else if (currentBlock->getCurrentX()>6) {
 			success = moveLeft();
-			if (!isIn(*currentBlock)) {
+			if (!isIn(*currentBlock,0,0)) {
 					success = moveLeft();
 			}
 		} else if (currentBlock->getCurrentY()==17) {
@@ -338,14 +269,12 @@ bool Tetris::rotateCCW() {
 			currentBlock->rotateCW();
 			success = false;
 		}
-	} else if (!isNoInter(*currentBlock)) {//In playfield, but has interference
+	} else if (!isNoInter()) {//In playfield, but has interference
 		currentBlock->rotateCW();//Interference, can't rotate
 		success = false;
 	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
-	clearDrawMatrix();
-	makeDrawMatrix();
 	return success;
 }
 
@@ -365,8 +294,6 @@ bool Tetris::update() {
 		getBlock();
 		makePlayMatrix(*currentBlock);
 		//Draw new updated state
-		clearDrawMatrix();
-		makeDrawMatrix();
 		return success;
 	}
 	//If it can move down
@@ -374,8 +301,6 @@ bool Tetris::update() {
 	if (flag) {
 		makePlayMatrix(*currentBlock);
 		//Draw new updated state
-		clearDrawMatrix();
-		makeDrawMatrix();
 		return success;
 	}
 	//If it can't move down
@@ -399,7 +324,7 @@ int Tetris::checkForLines() {
 	for (int i = 0; i<20; i++) {
 		line = true;
 		for (int j = 0; j<10; j++) {
-			if (drawMatrix[i][j] == 0)
+			if (fieldMatrix[i][j] == 0)
 				line = false;
 		}
 		if (line)
@@ -413,7 +338,7 @@ void Tetris::removeLines() {
 	for (int i = 19; i>=0; i--) {
 		line = true;
 		for (int j = 0; j<10; j++) {
-			if (drawMatrix[i][j] == 0)
+//			if (drawMatrix[i][j] == 0)
 				line = false;
 		}
 		if (line) {
@@ -425,14 +350,14 @@ void Tetris::removeLines() {
 
 void Tetris::shiftDown(int i) {
 	for (int j = i; j>=0; j--) {
-		if (j==0)
-			for (int k = 0; k<10; k++) {
-				drawMatrix[j][k] = 0;
-			}
-		else
-			for (int k = 0; k<10; k++) {
-				setDrawCell(j, k, getDrawCell(j-1, k));
-			}
+	//	if (j==0)
+//			for (int k = 0; k<10; k++) 
+//				drawMatrix[j][k] = 0;
+			
+	//	else
+//			for (int k = 0; k<10; k++) {
+//				setDrawCell(j, k, getDrawCell(j-1, k));
+//			}
 	}
 }
 /* ToDo
