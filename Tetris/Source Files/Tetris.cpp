@@ -109,7 +109,8 @@ bool Tetris::isNoInter() {
 	makePlayMatrix(*currentBlock);
 	for (int i = 0; i<10; i++) {
 		for (int j = 0; j<20; j++) {
-			if(playMatrix[i][j]!=0 && fieldMatrix[i][j]!=0) {
+			if(playMatrix[i][j]>0 && fieldMatrix[i][j]>0) {
+				cout<<"\n Interference!"<<endl;
 				ok = false;
 			}
 		}
@@ -169,11 +170,12 @@ void Tetris::getBlock() {
 //Move block left
 bool Tetris::moveLeft() {
 	bool success = false;
-	if (isIn(*currentBlock, -1, 0)) {
-		currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
+	currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
+	if (isIn(*currentBlock, 0, 0)&&isNoInter()) {
 		cout<<"Move left"<<endl;
 		success = true;
-	}	
+	}else
+		currentBlock->setCurrentX((currentBlock->getCurrentX())+1);
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
 	return success;
@@ -181,11 +183,12 @@ bool Tetris::moveLeft() {
 //Move block right
 bool Tetris::moveRight() {
 	bool success = false;
-	if (isIn(*currentBlock, 1, 0)) {
+	currentBlock->setCurrentX((currentBlock->getCurrentX())+1);
+	if (isIn(*currentBlock, 0, 0)&&isNoInter()) {
 		cout<<"Move right"<<endl;
-		currentBlock->setCurrentX((currentBlock->getCurrentX())+1);
 		success = true;
-	}
+	}else
+		currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
 	return success;
@@ -193,10 +196,11 @@ bool Tetris::moveRight() {
 //Move block up
 bool Tetris::moveUp() {
 	bool success = false;
-	if (isIn(*currentBlock, 0, -1)) {
-		currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
+	currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
+	if (isIn(*currentBlock, 0, 0)) {
 		success = true;
-	}
+	}else
+		currentBlock->setCurrentY((currentBlock->getCurrentY())+1);
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
 	return success;
@@ -205,10 +209,11 @@ bool Tetris::moveUp() {
 bool Tetris::moveDown() {
 	bool success = false;
 	//if the current block is within an x offset of 0, and a y offset of 1
-	if (isIn(*currentBlock, 0, 1)) {
-		currentBlock->setCurrentY((currentBlock->getCurrentY())+1);
+	currentBlock->setCurrentY((currentBlock->getCurrentY())+1);
+	if (isIn(*currentBlock, 0, 0) && isNoInter()) {
 		success = true;
-	}
+	}else
+		currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
 	return success;
@@ -284,6 +289,7 @@ bool Tetris::rotateCCW() {
 }
 
 //Check if block is stuck
+//Doesn't work yet
 bool Tetris::isStuck() {
 	return (!(rotateCW()||rotateCCW()||moveUp()||moveDown()||moveRight()
 			||moveLeft()));
@@ -293,15 +299,16 @@ bool Tetris::isStuck() {
 //Update
 bool Tetris::update() {
 	bool success = true;
+	clearPlayMatrix();
 	//If no current block, make a new block
 	if (currentBlock == NULL) {
 		cout<<"Get new block"<<endl;
 		getBlock();
-		makePlayMatrix(*currentBlock);
 		//Draw new updated state
 		return success;
 	}
 	//If it can move down
+	makePlayMatrix(*currentBlock);
 	bool flag = moveDown();
 	if (flag) {
 		makePlayMatrix(*currentBlock);
@@ -317,9 +324,9 @@ bool Tetris::update() {
 		checkForLines();
 		//updateScore(lines);
 		removeLines();
-		
 		success = false;
 	}
+	
 	return success;
 }
 
@@ -343,7 +350,7 @@ void Tetris::removeLines() {
 	for (int i = 19; i>=0; i--) {
 		line = true;
 		for (int j = 0; j<10; j++) {
-//			if (drawMatrix[i][j] == 0)
+			if (fieldMatrix[i][j] == 0)
 				line = false;
 		}
 		if (line) {
@@ -355,14 +362,14 @@ void Tetris::removeLines() {
 
 void Tetris::shiftDown(int i) {
 	for (int j = i; j>=0; j--) {
-	//	if (j==0)
-//			for (int k = 0; k<10; k++) 
-//				drawMatrix[j][k] = 0;
+		if (j==0)
+			for (int k = 0; k<10; k++) 
+				fieldMatrix[j][k] = 0;
 			
-	//	else
-//			for (int k = 0; k<10; k++) {
-//				setDrawCell(j, k, getDrawCell(j-1, k));
-//			}
+		else
+			for (int k = 0; k<10; k++) {
+				fieldMatrix[j][k] = fieldMatrix[j-1][k];
+			}
 	}
 }
 /* ToDo
