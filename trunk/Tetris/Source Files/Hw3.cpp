@@ -1,18 +1,18 @@
 #include <iostream>		
 #include <cstdlib>		
 #include <ctime>		
-//#include "GL/glut.h"
-//#include "GL/glu.h"
+#include "GL/glut.h"
+#include "GL/glu.h"
 #include "Tetris.h"
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
+//#include <GLUT/glut.h>
+//#include <OpenGL/glu.h>
 Tetris game;
 
 //Timer function
 //Calls the game update function
 void update(int value){
-	game.test();
-	//game.update();
+	//game.test();
+	game.update();
 	glutPostRedisplay();
 	//every 1000 ms (1s) the "update(1)" fn is called
 	glutTimerFunc(1000, update, 1);	
@@ -91,7 +91,7 @@ void spkeyboard(int key, int x, int y){
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	//gluLookAt(0,0,0,0,1,0,0,0,0);
+	//gluLookAt(3,3,5,0,0,0,0,1,0);
 /*
 			glColor3f(1.0f, 1.0f, 1.0f);
 			GLfloat x = j;
@@ -102,10 +102,10 @@ void display(void) {
 */
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-	glVertex3f(-0.5f,-1.0f,-1.0f);
-	glVertex3f(-0.5f,1.0f,-1.0f);
-	glVertex3f(0.5f,1.0f,-1.0f);
-	glVertex3f(0.5f,-1.0f,-1.0f);
+	glVertex3f(-0.7f,-1.2f,-6.0f);
+	glVertex3f(-0.7f,1.2f,-6.0f);
+	glVertex3f(0.6f,1.2f,-6.0f);
+	glVertex3f(0.6f,-1.2f,-6.0f);
 	glEnd();
 	for(int i = 0; i<4;i++){
 		for(int j = 0; j<4;j++){
@@ -119,7 +119,7 @@ void display(void) {
 			if(color>0 && color<8){
 				glLoadIdentity();
 				glPushMatrix();
-				glTranslated(x*0.1+0.5,y*0.1-1,-1);
+				glTranslated(x*0.1+0.7,y*0.1-1,-5);
 				glScalef(0.1f,0.1f,0.1f);
 				glutSolidCube(1.0f);
 				glPopMatrix();
@@ -139,7 +139,7 @@ void display(void) {
 			if(color>0 && color<8){
 				glLoadIdentity();
 				glPushMatrix();
-				glTranslated(x*0.1-.5,y*0.1-0.8,-1);
+				glTranslated(x*0.1-.5,y*0.1-0.8,-5);
 				glScalef(0.1f,0.1f,0.1f);
 				glutSolidCube(1.0f);
 				glPopMatrix();
@@ -156,7 +156,7 @@ void display(void) {
 				if(color>0 && color<8){
 					glLoadIdentity();
 					glPushMatrix();
-					glTranslated(x*0.1-.5,y*0.1-0.8,-1);
+					glTranslated(x*0.1-.5,y*0.1-0.8,-5);
 					glScalef(0.1f,0.1f,0.1f);
 					glutSolidCube(1.0f);
 					glPopMatrix();
@@ -166,6 +166,22 @@ void display(void) {
 	glFlush();
 }
 
+//Reshape Function
+void reshape(int x, int y)
+{
+	if (y == 0 || x == 0) return;  //Nothing is visible then, so return
+	
+	//Set a new projection matrix
+	glMatrixMode(GL_PROJECTION);  
+	glLoadIdentity();
+	//Angle of view:40 degrees
+	//Near clipping plane distance: 0.5
+	//Far clipping plane distance: 20.0
+	gluPerspective(45.0,(GLdouble)x/(GLdouble)y,1,20.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glViewport(0,0,x,y);  //Use the whole window for rendering
+}
 
 //Main function
 //Sets up window and callback funcions
@@ -177,8 +193,9 @@ int main(int argc, char **argv) {
 	init();
 	glutCreateWindow("Tetris");
 	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
-	//glutSpecialFunc(spkeyboard);
+	glutSpecialFunc(spkeyboard);
 	glutMainLoop();
 	return 0;
 }
