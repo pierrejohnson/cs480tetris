@@ -51,7 +51,8 @@ void keyboard(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 	case 'o':
-		game.update();
+		game.moveBlock();
+		game.getBlock();
 		glutPostRedisplay();
 		break;
 	default:
