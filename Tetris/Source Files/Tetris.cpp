@@ -69,12 +69,17 @@ void Tetris::makePlayMatrix(Block block) {
 
 //Make play matrix
 void Tetris::moveBlock() {
+	cout<<endl<<"fieldmatrix"<<endl;
 	for (int i = 0; i<20; i++) {
 		for (int j = 0; j<10; j++) {
 			
 				fieldMatrix[i][j]+=getPlayCell(i, j);
+				cout<<fieldMatrix[i][j];
+				
 		}
+		cout<<endl;
 	}
+	currentBlock = NULL;
 }
 
 //Check if Block is in play area using a x and y offset
@@ -312,7 +317,7 @@ bool Tetris::update() {
 		checkForLines();
 		//updateScore(lines);
 		removeLines();
-		currentBlock = NULL;
+		
 		success = false;
 	}
 	return success;
