@@ -180,8 +180,8 @@ blockType Tetris::randBlk() {
 }
 
 //Generate new Block
-void Tetris::getBlock() {
-
+bool Tetris::getBlock() {
+	
 	//for the very first run
 	if (currentBlock == NULL && nextBlock == NULL) {
 		currentBlock = new Block(randBlk());
@@ -193,6 +193,7 @@ void Tetris::getBlock() {
 		nextBlock = new Block(randBlk());
 		currentBlock->updatePosition(4, 0);
 	}
+	return isNoInter();
 }
 
 //Move block left
@@ -263,6 +264,7 @@ bool Tetris::dropDown(){
 		
 	}
 	update();
+	return true;
 }
 
 //Rotate block CW
@@ -366,16 +368,14 @@ bool Tetris::update() {
 	//If it can't move down
 	else if (!flag) {
 		cout<<"Stuck"<<endl;
-
 		//Merge Tetris matrix
 		moveBlock();
 		clearPlayMatrix();
-		getBlock();
 		//Check for line here
 		checkForLines();
 		//updateScore(lines);
 		removeLines();
-		success = false;
+		success = getBlock();
 	}
 	
 	return success;

@@ -28,7 +28,7 @@ public:
 	//Move stuck block to fieldMatrix
 	void moveBlock();
 	//Get new block
-	void getBlock();
+	bool getBlock();
 	//Move block left
 	bool moveLeft();
 	//Move block right

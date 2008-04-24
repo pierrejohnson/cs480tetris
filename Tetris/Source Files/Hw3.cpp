@@ -6,18 +6,21 @@
 #include "Tetris.h"
 //#include <GLUT/glut.h>
 //#include <OpenGL/glu.h>
+#include "Camera.h"
 
 //Global Variables
 Tetris game;
 bool pause = false;
-int eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
+GLfloat eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
+Camera camera;
 
 //Timer function
 //Calls the game update function
 void update(int value) {
 	if (!pause) {
 		//game.test();
-		game.update();
+		if(!game.update())
+			pause = true;
 		glutPostRedisplay();
 	}
 	//every 1000 ms (1s) the "update(1)" fn is called
@@ -29,13 +32,17 @@ void update(int value) {
  * lighting model, and depth buffer.
  */
 void init(void) {
-	eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0;
-	upy = 1;
-	centery = 10;
-	eyey = 10;
-	eyez = 35;
-	glEnable(GL_LINE_SMOOTH);
+	eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0.0f;
+	upy = 1.0f;
+	centery = 10.0f;
+	eyey = 10.0f;
+	eyez = 35.0f;
+	camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+	//glEnable(GL_LINE_SMOOTH);
+	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	game.Initialize();
 	//every 1 seconds calls the update function
 	glutTimerFunc(1000, update, 1);
@@ -47,56 +54,43 @@ void init(void) {
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	case 'a':
-		//	game.moveLeft();
-		eyex-=1;
+		camera.strafeCamera(-0.03);
 		glutPostRedisplay();
 		break;
 	case 'd':
-		//	game.moveRight();
-		eyex+=1;
+		camera.strafeCamera(0.03);
 		glutPostRedisplay();
 		break;
 	case 'w':
-		//	game.rotateCCW();
-		eyey-=1;
+		camera.moveCamera(0.03);
 		glutPostRedisplay();
 		break;
 	case 's':
-		//	game.moveDown();
-		eyey+=1;
+		camera.moveCamera(-0.03);
 		glutPostRedisplay();
 		break;
 	case 'r':
-		eyez-=1;
+		camera.liftCamera(0.1);
 		glutPostRedisplay();
 		break;
 	case 'f':
-		eyez+=1;
+		camera.liftCamera(-0.1);
 		glutPostRedisplay();
 		break;
-		//ghjy
 	case 'g':
-		centerx-=1;
+		camera.rotateCamera(10,0);
 		glutPostRedisplay();
 		break;
 	case 'j':
-		centerx+=1;
+		camera.rotateCamera(-10,0);
 		glutPostRedisplay();
 		break;
 	case 'y':
-		centery-=1;
+		camera.rotateCamera(0,50);
 		glutPostRedisplay();
 		break;
 	case 'h':
-		centery+=1;
-		glutPostRedisplay();
-		break;
-	case 'i':
-		centerz-=1;
-		glutPostRedisplay();
-		break;
-	case 'k':
-		centerz+=1;
+		camera.rotateCamera(0,-50);
 		glutPostRedisplay();
 		break;
 	case 'o':
@@ -156,7 +150,7 @@ void drawFrame() {
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
-		glTranslated(i, 20, 0);
+		glTranslated(i, 21, 0);
 		glutSolidCube(1.0f);
 		glColor3f(0, 0, 0);
 		glutWireCube(1.0f);
@@ -171,7 +165,7 @@ void drawFrame() {
 		glutWireCube(1.0f);
 		glPopMatrix();
 	}
-	for (int i = -10; i<10; i++) {
+	for (int i = -10; i<11; i++) {
 		glColor3f(1.0, 1.0, 1.0);
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
@@ -226,6 +220,13 @@ void drawFrame() {
 //Display function
 //When screen is redrawn, redraw here
 void display(void) {
+	eyex = camera.PositionVector.x;
+	eyey = camera.PositionVector.y;
+	eyez = camera.PositionVector.z;
+	centerx = camera.ViewVector.x;
+	centery = camera.ViewVector.y;
+	centerz = camera.ViewVector.z;
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
@@ -239,6 +240,8 @@ void display(void) {
 		glVertex3f(i/10, 0, 25);
 		glEnd();
 	}
+	//Draw Game Frame
+	drawFrame();
 	//Draw Next Block
 	for (int i = 0; i<4; i++) {
 		for (int j = 0; j<4; j++) {
@@ -295,8 +298,7 @@ void display(void) {
 
 		}
 	}
-	//Draw Game Frame
-	drawFrame();
+
 
 	glFlush();
 	glutSwapBuffers();
@@ -313,7 +315,7 @@ void reshape(int x, int y) {
 	//Angle of view:40 degrees
 	//Near clipping plane distance: 0.5
 	//Far clipping plane distance: 20.0
-	gluPerspective(40.0, (GLdouble)x/(GLdouble)y, 0.1, 200.0);
+	gluPerspective(40.0, (GLdouble)x/(GLdouble)y, 0.1, 150.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, x, y); //Use the whole window for rendering
