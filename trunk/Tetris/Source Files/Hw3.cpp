@@ -128,6 +128,8 @@ void display(void) {
 						glTranslated(x*0.1-.5,y*0.1-0.8,-5);
 						glScalef(0.1f,0.1f,0.1f);
 						glutSolidCube(1.0f);
+						glColor3f(0,0,0);
+						glutWireCube(1.0f);
 						glPopMatrix();
 					}
 					glColor3f(color*0.4f, color*0.1f, color*0.6f);
@@ -137,6 +139,8 @@ void display(void) {
 						glTranslated(x*0.1-.5,y*0.1-0.8,-5);
 						glScalef(0.1f,0.1f,0.1f);
 						glutSolidCube(1.0f);
+						glColor3f(0,0,0);
+						glutWireCube(1.0f);
 						glPopMatrix();
 					}
 
