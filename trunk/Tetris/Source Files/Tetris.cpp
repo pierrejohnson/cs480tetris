@@ -374,16 +374,22 @@ bool Tetris::update() {
 }
 
 int Tetris::checkForLines() {
+	cout<<endl<<"call to game.checkForLines()"<<endl;
 	int count = 0;
 	bool line = true;
 	for (int i = 0; i<20; i++) {
+		
 		line = true;
 		for (int j = 0; j<10; j++) {
-			if (fieldMatrix[i][j] == 0)
+			if (fieldMatrix[i][j] == 0){
 				line = false;
+			}
 		}
-		if (line)
+		if (line){
 			count++;
+			cout<<endl<<"LINE detected"<<endl;
+			cout<<"count:"<<count<<endl;
+		}
 	}
 	return count;
 }
