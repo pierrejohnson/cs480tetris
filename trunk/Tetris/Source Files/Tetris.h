@@ -37,6 +37,8 @@ public:
 	bool moveUp();
 	//Move block down
 	bool moveDown();
+	//Drop block down
+	bool dropDown();
 	//Rotate block CW
 	bool rotateCW();
 	//Rotate block CCW
