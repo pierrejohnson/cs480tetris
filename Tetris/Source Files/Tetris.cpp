@@ -258,6 +258,13 @@ bool Tetris::moveDown() {
 	return success;
 }
 
+bool Tetris::dropDown(){
+	while(moveDown()){
+		
+	}
+	update();
+}
+
 //Rotate block CW
 bool Tetris::rotateCW() {
 	bool success = true;
