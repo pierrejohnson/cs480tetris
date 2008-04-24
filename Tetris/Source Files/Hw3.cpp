@@ -63,6 +63,11 @@ void keyboard(unsigned char key, int x, int y) {
 			pause = false;
 		else
 			pause = true;
+		break;
+	case 'q':
+		game.moveUp();
+		glutPostRedisplay();
+		break;
 	default:
 		break;
 
