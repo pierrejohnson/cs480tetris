@@ -232,7 +232,7 @@ bool Tetris::moveUp() {
 	bool success = false;
 	cout<<endl<<"Call to game.moveUp()"<<endl;
 	currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
-	if (isIn(*currentBlock, 0, 0)) {
+	if (isIn(*currentBlock, 0, 0) && isNoInter()) {
 		success = true;
 	}else
 		currentBlock->setCurrentY((currentBlock->getCurrentY())+1);
