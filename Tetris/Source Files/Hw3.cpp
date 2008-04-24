@@ -1,11 +1,11 @@
 #include <iostream>		
 #include <cstdlib>		
 #include <ctime>		
-//#include "GL/glut.h"
-//#include "GL/glu.h"
+#include "GL/glut.h"
+#include "GL/glu.h"
 #include "Tetris.h"
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
+//#include <GLUT/glut.h>
+//#include <OpenGL/glu.h>
 Tetris game;
 
 //Timer function
@@ -91,15 +91,6 @@ void spkeyboard(int key, int x, int y){
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	//gluLookAt(3,3,5,0,0,0,0,1,0);
-/*
-			glColor3f(1.0f, 1.0f, 1.0f);
-			GLfloat x = j;
-			GLfloat y = 18-i;
-
-			glTranslated(x*0.1-.5,y*0.1-1,-1);
-			glScalef(0.1f,0.1f,0.1f);
-*/
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
 	glVertex3f(-0.7f,-1.2f,-6.0f);
@@ -109,11 +100,8 @@ void display(void) {
 	glEnd();
 	for(int i = 0; i<4;i++){
 		for(int j = 0; j<4;j++){
-			//int color = game.getPlayCell(i,j);
 			int color = game.nextBlock->getBlockMatrix().getCell(i,j);
 			glColor3f(color*0.4f, color*0.1f, color*0.6f);
-			//cout<<color;
-			//gluLookAt(0,0,0,0,0,0,0,0,0);
 			GLfloat x = j;
 			GLfloat y = 18-i;
 			if(color>0 && color<8){
@@ -126,43 +114,34 @@ void display(void) {
 			}
 		}
 	}
-	//cout<<endl;
-	for(int i = 0;i<20;i++){
-		//cout<<endl;
-		for(int j = 0; j<10;j++){
-			//int color = game.getDrawCell(i,j);
-			int color = game.getPlayCell(i,j);
-			glColor3f(color*0.4f, color*0.1f, color*0.6f);
-			//cout<<color;
-			GLfloat x = j;
-			GLfloat y = 18-i;
-			if(color>0 && color<8){
-				glLoadIdentity();
-				glPushMatrix();
-				glTranslated(x*0.1-.5,y*0.1-0.8,-5);
-				glScalef(0.1f,0.1f,0.1f);
-				glutSolidCube(1.0f);
-				glPopMatrix();
-			}
-		}
-	}
-	for(int i = 0;i<20;i++){
-			for(int j = 0; j<10;j++){
-				//int color = game.getDrawCell(i,j);
-				int color = game.getFieldCell(i,j);
-				glColor3f(color*0.4f, color*0.1f, color*0.6f);
-				GLfloat x = j;
-				GLfloat y = 18-i;
-				if(color>0 && color<8){
-					glLoadIdentity();
-					glPushMatrix();
-					glTranslated(x*0.1-.5,y*0.1-0.8,-5);
-					glScalef(0.1f,0.1f,0.1f);
-					glutSolidCube(1.0f);
-					glPopMatrix();
+	for(int i = 19;i>=0;i--){
+				for(int j = 9; j>=0;j--){
+					int color = game.getFieldCell(i,j);
+					int color1 = game.getPlayCell(i,j);
+					glColor3f(color*0.4f, color*0.1f, color*0.6f);
+					GLfloat x = j;
+					GLfloat y = 18-i;
+					glColor3f(color1*0.4f, color1*0.1f, color1*0.6f);
+					if(color1>0 && color1<8){
+						glLoadIdentity();
+						glPushMatrix();
+						glTranslated(x*0.1-.5,y*0.1-0.8,-5);
+						glScalef(0.1f,0.1f,0.1f);
+						glutSolidCube(1.0f);
+						glPopMatrix();
+					}
+					glColor3f(color*0.4f, color*0.1f, color*0.6f);
+					if(color>0 && color<8){
+						glLoadIdentity();
+						glPushMatrix();
+						glTranslated(x*0.1-.5,y*0.1-0.8,-5);
+						glScalef(0.1f,0.1f,0.1f);
+						glutSolidCube(1.0f);
+						glPopMatrix();
+					}
+
 				}
 			}
-		}
 	glFlush();
 }
 
@@ -177,7 +156,7 @@ void reshape(int x, int y)
 	//Angle of view:40 degrees
 	//Near clipping plane distance: 0.5
 	//Far clipping plane distance: 20.0
-	gluPerspective(45.0,(GLdouble)x/(GLdouble)y,1,20.0);
+	gluPerspective(25.0,(GLdouble)x/(GLdouble)y,1,10.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0,0,x,y);  //Use the whole window for rendering

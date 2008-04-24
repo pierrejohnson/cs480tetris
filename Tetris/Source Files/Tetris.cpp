@@ -362,6 +362,7 @@ bool Tetris::update() {
 
 		//Merge Tetris matrix
 		moveBlock();
+		clearPlayMatrix();
 		getBlock();
 		//Check for line here
 		checkForLines();
