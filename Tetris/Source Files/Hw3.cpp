@@ -7,46 +7,28 @@
 //#include <GLUT/glut.h>
 //#include <OpenGL/glu.h>
 #include "Camera.h"
+#include "AL/al.h"
+#include "AL/alut.h"
+
 
 //Global Variables
 Tetris game;
-bool pause = false;
+bool pause1 = false;
 GLfloat eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 Camera camera;
+GLuint texture1;
 
 //Timer function
 //Calls the game update function
 void update(int value) {
-	if (!pause) {
+	if (!pause1) {
 		//game.test();
-		if(!game.update())
-			pause = true;
+		if (!game.update())
+			pause1 = true;
 		glutPostRedisplay();
 	}
 	//every 1000 ms (1s) the "update(1)" fn is called
 	glutTimerFunc(1000, update, 1);
-}
-
-/*Initialization function
- * Initialize material property, light source, 
- * lighting model, and depth buffer.
- */
-void init(void) {
-	eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0.0f;
-	upy = 1.0f;
-	centery = 10.0f;
-	eyey = 10.0f;
-	eyez = 35.0f;
-	camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
-	//glEnable(GL_LINE_SMOOTH);
-	glClearDepth(1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	game.Initialize();
-	//every 1 seconds calls the update function
-	glutTimerFunc(1000, update, 1);
-
 }
 
 //Keyboard function
@@ -78,19 +60,19 @@ void keyboard(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 	case 'g':
-		camera.rotateCamera(10,0);
+		camera.rotateCamera(10, 0);
 		glutPostRedisplay();
 		break;
 	case 'j':
-		camera.rotateCamera(-10,0);
+		camera.rotateCamera(-10, 0);
 		glutPostRedisplay();
 		break;
 	case 'y':
-		camera.rotateCamera(0,50);
+		camera.rotateCamera(0, 50);
 		glutPostRedisplay();
 		break;
 	case 'h':
-		camera.rotateCamera(0,-50);
+		camera.rotateCamera(0, -50);
 		glutPostRedisplay();
 		break;
 	case 'o':
@@ -99,16 +81,26 @@ void keyboard(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 	case 'p':
-		if (pause)
-			pause = false;
+		if (pause1)
+			pause1 = false;
 		else
-			pause = true;
+			pause1 = true;
 		break;
 	case 'v':
-		if (pause) {
+		if (pause1) {
 			game.moveUp();
 			glutPostRedisplay();
 		}
+		break;
+	case 'm':
+		//Camera
+		eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0.0f;
+		upy = 1.0f;
+		centery = 10.0f;
+		eyey = 10.0f;
+		eyez = 35.0f;
+		camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glutPostRedisplay();
 		break;
 	case ' ':
 		game.dropDown();
@@ -143,6 +135,43 @@ void spkeyboard(int key, int x, int y) {
 	}
 }
 
+//Draw Cube function
+void drawCube() {
+	glBegin(GL_QUADS);
+	glVertex3f( 0.5f, 0.5f, 0.5f);
+	glVertex3f( 0.5f, -0.5f, 0.5f); 
+	glVertex3f( 0.5f, -0.5f, -0.5f); 
+	glVertex3f( 0.5f, 0.5f, -0.5f); 
+	
+	glVertex3f( 0.5f, 0.5f, -0.5f); 
+	glVertex3f( 0.5f, -0.5f, -0.5f); 
+	glVertex3f(-0.5f, -0.5f, -0.5f); 
+	glVertex3f(-0.5f, 0.5f, -0.5f); 
+	
+	glVertex3f(-0.5f, 0.5f, -0.5f); 
+	glVertex3f(-0.5f, -0.5f, -0.5f); 
+	glVertex3f(-0.5f, -0.5f, 0.5f); 
+	glVertex3f(-0.5f, 0.5f, 0.5f); 
+	
+	glVertex3f(-0.5f, 0.5f, 0.5f); 
+	glVertex3f(-0.5f, -0.5f, 0.5f); 
+	glVertex3f( 0.5f, -0.5f, 0.5f); 
+	glVertex3f( 0.5f, 0.5f, 0.5f); 
+	
+	glVertex3f(-0.5f, 0.5f, -0.5f); 
+	glVertex3f(-0.5f, 0.5f, 0.5f); 
+	glVertex3f( 0.5f, 0.5f, 0.5f); 
+	glVertex3f( 0.5f, 0.5f, -0.5f); 
+	
+	glVertex3f(-0.5f, -0.5f, 0.5f); 
+	glVertex3f(-0.5f, -0.5f, -0.5f); 
+	glVertex3f( 0.5f, -0.5f, -0.5f); 
+	glVertex3f( 0.5f, -0.5f, 0.5f); 
+	glEnd();
+	glColor3f(0, 0, 0);
+	glutWireCube(1.0f);
+}
+
 //Draw Game Frame Function
 void drawFrame() {
 	for (int i = -6; i<6; i++) {
@@ -151,18 +180,20 @@ void drawFrame() {
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glTranslated(i, 21, 0);
-		glutSolidCube(1.0f);
-		glColor3f(0, 0, 0);
-		glutWireCube(1.0f);
+	//	glutSolidCube(1.0f);
+	//	glColor3f(0, 0, 0);
+	//	glutWireCube(1.0f);
+		drawCube();
 		glPopMatrix();
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glTranslated(i, 0, 0);
-		glutSolidCube(1.0f);
-		glColor3f(0, 0, 0);
-		glutWireCube(1.0f);
+	//	glutSolidCube(1.0f);
+	//	glColor3f(0, 0, 0);
+	//	glutWireCube(1.0f);
+		drawCube();
 		glPopMatrix();
 	}
 	for (int i = -10; i<11; i++) {
@@ -171,18 +202,20 @@ void drawFrame() {
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glTranslated(-6, i+10, 0);
-		glutSolidCube(1.0f);
-		glColor3f(0, 0, 0);
-		glutWireCube(1.0f);
+	//	glutSolidCube(1.0f);
+	//	glColor3f(0, 0, 0);
+	//	glutWireCube(1.0f);
+		drawCube();
 		glPopMatrix();
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glTranslated(5, i+10, 0);
-		glutSolidCube(1.0f);
-		glColor3f(0, 0, 0);
-		glutWireCube(1.0f);
+	//	glutSolidCube(1.0f);
+	//	glColor3f(0, 0, 0);
+	//	glutWireCube(1.0f);
+		drawCube();
 		glPopMatrix();
 	}
 	glLoadIdentity();
@@ -191,17 +224,19 @@ void drawFrame() {
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(i, 12, 0);
-		glutSolidCube(1.0f);
-		glColor3f(0, 0, 0);
-		glutWireCube(1.0f);
+	//	glutSolidCube(1.0f);
+	//	glColor3f(0, 0, 0);
+	//	glutWireCube(1.0f);
+		drawCube();
 		glPopMatrix();
 
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(i, 17, 0);
-		glutSolidCube(1.0f);
-		glColor3f(0, 0, 0);
-		glutWireCube(1.0f);
+	//	glutSolidCube(1.0f);
+	//	glColor3f(0, 0, 0);
+	//	glutWireCube(1.0f);
+		drawCube();
 		glPopMatrix();
 	}
 
@@ -209,14 +244,14 @@ void drawFrame() {
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(12, i, 0);
-		glutSolidCube(1.0f);
-		glColor3f(0, 0, 0);
-		glutWireCube(1.0f);
+	//	glutSolidCube(1.0f);
+	//	glColor3f(0, 0, 0);
+	//	glutWireCube(1.0f);
+		drawCube();
 		glPopMatrix();
 	}
 
 }
-
 //Display function
 //When screen is redrawn, redraw here
 void display(void) {
@@ -227,19 +262,32 @@ void display(void) {
 	centery = camera.ViewVector.y;
 	centerz = camera.ViewVector.z;
 
+	glEnable(GL_LINE_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glClearDepth(1.0);
+	glDepthFunc(GL_LEQUAL);
+	glDepthMask(GL_TRUE);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glLoadIdentity();
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 	//Draw grid
-	for (float i = -250; i <= 250; i += 5) {
-		glBegin(GL_LINES);
+	glBegin(GL_QUADS);
+		glColor3f(0.6, 0.4, 0.5);
+		glVertex3f(25, -0.5, -25);
+		glVertex3f(-25, -0.5, -25);
+		glVertex3f(-25, -0.5, 25);
+		glVertex3f(25, -0.5, 25);
+	glEnd();
+	glBegin(GL_LINES);
+	for (float i = -250; i <= 250; i += 10) {
 		glColor3f(1.0, 1.0, 0.5);
-		glVertex3f(-25, 0, i/10);
-		glVertex3f(25, 0, i/10);
-		glVertex3f(i/10, 0, -25);
-		glVertex3f(i/10, 0, 25);
-		glEnd();
+		glVertex3f(-25, -0.5, i/10);
+		glVertex3f(25, -0.5, i/10);
+		glVertex3f(i/10, -0.5, -25);
+		glVertex3f(i/10, -0.5, 25);
 	}
+	glEnd();
 	//Draw Game Frame
 	drawFrame();
 	//Draw Next Block
@@ -255,9 +303,7 @@ void display(void) {
 						upy, upz);
 				glPushMatrix();
 				glTranslated(x, y, 0);
-				glutSolidCube(1.0f);
-				glColor3f(0, 0, 0);
-				glutWireCube(1.0f);
+				drawCube();
 				glPopMatrix();
 			}
 		}
@@ -277,9 +323,10 @@ void display(void) {
 						upy, upz);
 				glPushMatrix();
 				glTranslated(x, y, 0);
-				glutSolidCube(1.0f);
-				glColor3f(0, 0, 0);
-				glutWireCube(1.0f);
+			//	glutSolidCube(1.0f);
+			//	glColor3f(0, 0, 0);
+			//	glutWireCube(1.0f);
+				drawCube();
 				glPopMatrix();
 
 			}
@@ -290,18 +337,60 @@ void display(void) {
 						upy, upz);
 				glPushMatrix();
 				glTranslated(x, y, 0);
-				glutSolidCube(1.0f);
-				glColor3f(0, 0, 0);
-				glutWireCube(1.0f);
+			//	glutSolidCube(1.0f);
+			//	glColor3f(0, 0, 0);
+			//	glutWireCube(1.0f);
+				drawCube();
 				glPopMatrix();
 			}
 
 		}
 	}
 
-
 	glFlush();
 	glutSwapBuffers();
+}
+
+//Load Textures
+void loadTextures() {
+
+}
+
+/*Initialization function
+ * Initialize material property, light source, 
+ * lighting model, and depth buffer.
+ */
+void init(void) {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	//Angle of view:40 degrees
+	//Near clipping plane distance: 0.5
+	//Far clipping plane distance: 20.0
+	gluPerspective(40.0, (GLdouble)700/(GLdouble)700, 5, 100.0);
+	glMatrixMode(GL_MODELVIEW);
+	glViewport(0, 0, 700, 700); //Use the whole window for rendering
+	//Texture Map
+	glGenTextures( 1, &texture1);
+	//Camera
+	eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0.0f;
+	upy = 1.0f;
+	centery = 10.0f;
+	eyey = 10.0f;
+	eyez = 35.0f;
+	camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+/*	glEnable(GL_LINE_SMOOTH);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glClearDepth(1.0);
+	glDepthFunc(GL_NICEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+*/	
+	game.Initialize();
+	//every 1 seconds calls the update function
+	glutTimerFunc(1000, update, 1);
+
 }
 
 //Reshape Function
@@ -312,10 +401,7 @@ void reshape(int x, int y) {
 	//Set a new projection matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//Angle of view:40 degrees
-	//Near clipping plane distance: 0.5
-	//Far clipping plane distance: 20.0
-	gluPerspective(40.0, (GLdouble)x/(GLdouble)y, 0.1, 150.0);
+	gluPerspective(40.0, (GLdouble)x/(GLdouble)y, 5, 100.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, x, y); //Use the whole window for rendering
@@ -334,8 +420,8 @@ int main(int argc, char **argv) {
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(spkeyboard);
-	glDepthFunc(GL_EQUAL);
 	glutMainLoop();
 	return 0;
 }
+
 
