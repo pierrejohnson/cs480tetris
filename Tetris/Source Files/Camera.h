@@ -3,6 +3,7 @@
 
 #include <gl\glut.h>
 #include "math.h"
+#include <iostream>
 #define PI PI 3.1415265359
 
 using namespace std;
@@ -14,9 +15,14 @@ struct Vector{
 
 class Camera{
 public:
+	GLfloat startX,startY,currentX,currentY,endX,endY;
+	GLfloat changeX,changeY;
 	Vector PositionVector;
 	Vector ViewVector;
 	Vector UpVector;
+	Vector savedPositionVector;
+	Vector savedViewVector;
+	Vector savedUpVector;
 	//Vector Operations
 	Vector  makeVector(GLfloat,GLfloat,GLfloat);
 	//Constructor
@@ -31,6 +37,9 @@ public:
 	void liftCamera(float distance);
 	//Look around
 	void rotateCamera(float x, float y);
+	//Mouse Camera
+	void mouse(int button, int state, int x, int y);
+	void mouseMovement(int x, int y);
 
 };
 

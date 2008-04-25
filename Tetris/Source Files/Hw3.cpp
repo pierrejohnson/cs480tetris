@@ -17,17 +17,17 @@ bool pause1 = false;
 GLfloat eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 Camera camera;
 GLuint texture1;
+bool pressed = false;
 
 //Timer function
 //Calls the game update function
 void update(int value) {
-	if (!pause1) {
+	if (!(pause1)) {
 		//game.test();
 		if (!game.update())
 			pause1 = true;
-		glutPostRedisplay();
 	}
-	//every 1000 ms (1s) the "update(1)" fn is called
+	glutPostRedisplay();
 	glutTimerFunc(1000, update, 1);
 }
 
@@ -36,49 +36,48 @@ void update(int value) {
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	case 'a':
-		camera.strafeCamera(-0.03);
-		glutPostRedisplay();
+		camera.strafeCamera(-0.01);
+		
 		break;
 	case 'd':
-		camera.strafeCamera(0.03);
-		glutPostRedisplay();
+		camera.strafeCamera(0.01);
+		
 		break;
 	case 'w':
-		camera.moveCamera(0.03);
-		glutPostRedisplay();
+		camera.moveCamera(0.01);
+		
 		break;
 	case 's':
-		camera.moveCamera(-0.03);
-		glutPostRedisplay();
+		camera.moveCamera(-0.01);
 		break;
 	case 'r':
 		camera.liftCamera(0.1);
-		glutPostRedisplay();
+		
 		break;
 	case 'f':
 		camera.liftCamera(-0.1);
-		glutPostRedisplay();
+		
 		break;
 	case 'g':
 		camera.rotateCamera(10, 0);
-		glutPostRedisplay();
+		
 		break;
 	case 'j':
 		camera.rotateCamera(-10, 0);
-		glutPostRedisplay();
+		
 		break;
 	case 'y':
 		camera.rotateCamera(0, 50);
-		glutPostRedisplay();
+		
 		break;
 	case 'h':
 		camera.rotateCamera(0, -50);
-		glutPostRedisplay();
+		
 		break;
 	case 'o':
 		game.moveBlock();
 		game.getBlock();
-		glutPostRedisplay();
+		
 		break;
 	case 'p':
 		if (pause1)
@@ -89,7 +88,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'v':
 		if (pause1) {
 			game.moveUp();
-			glutPostRedisplay();
+			
 		}
 		break;
 	case 'm':
@@ -100,39 +99,41 @@ void keyboard(unsigned char key, int x, int y) {
 		eyey = 10.0f;
 		eyez = 35.0f;
 		camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
-		glutPostRedisplay();
+		
 		break;
 	case ' ':
 		game.dropDown();
-		glutPostRedisplay();
+		
 	default:
 		break;
 
 	}
+	//if(!pressed)
+	glutPostRedisplay();
 }
 void spkeyboard(int key, int x, int y) {
 	switch (key) {
 	case GLUT_KEY_LEFT:
-		cout<<"Move Left"<<endl;
 		game.moveLeft();
-		glutPostRedisplay();
+		
 		break;
 	case GLUT_KEY_RIGHT:
 		game.moveRight();
-		glutPostRedisplay();
+		
 		break;
 	case GLUT_KEY_UP:
 		game.rotateCCW();
-		glutPostRedisplay();
+		
 		break;
 	case GLUT_KEY_DOWN:
 		game.moveDown();
-		glutPostRedisplay();
+		
 		break;
 	default:
 		break;
 
 	}
+		glutPostRedisplay();
 }
 
 //Draw Cube function
@@ -405,6 +406,22 @@ void reshape(int x, int y) {
 
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, x, y); //Use the whole window for rendering
+	glutPostRedisplay();
+}
+
+void mouse(int button, int state, int x, int y){
+	cout<<state<<endl;
+	if(state == GLUT_DOWN)
+		pressed = true;
+	else
+		pressed = false;
+	camera.mouse(button, state, x, y);
+	glutPostRedisplay();
+}
+
+void mouseMovement(int x, int y){
+	camera.mouseMovement(x,y);
+	glutPostRedisplay();
 }
 
 //Main function
@@ -420,6 +437,8 @@ int main(int argc, char **argv) {
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(spkeyboard);
+	glutMouseFunc(mouse);
+	glutMotionFunc(mouseMovement);
 	glutMainLoop();
 	return 0;
 }
