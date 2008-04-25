@@ -69,12 +69,35 @@ void Camera::rotateCamera(float x, float y){
 	float angleY = 0.0f;
 	float angleZ = 0.0f;
 	angleY = x/250;
-	angleZ = y/250;
-	ViewVector.y+=angleZ*2;
+	angleZ = y/50;
+	ViewVector.y+=angleZ*3;
 	//Rotate_View(-angle_y);
 	Vector vec = makeVector(ViewVector.x-PositionVector.x,
 			ViewVector.y-PositionVector.y,
 			ViewVector.z-PositionVector.z);
 	ViewVector.z = (float) (PositionVector.z + sin(-angleY)*vec.x + cos(-angleY)*vec.z);
 	ViewVector.x = (float) (PositionVector.x + cos(-angleY)*vec.x - sin(-angleY)*vec.z);
+}
+
+//Mouse Function
+void Camera::mouse(int button, int state, int x, int y){
+	if(state == GLUT_DOWN){
+		
+		startX = x;
+		startY = y;
+		
+	}
+	changeX = 0;
+	changeY = 0;
+	
+}
+void Camera::mouseMovement(int x, int y){
+	
+	rotateCamera(-changeX,-changeY);
+	changeX = (float) (startX-x);
+	changeY = (float) (startY-y);
+	if(!(changeX == 0 && changeY == 0)){
+	//New
+	rotateCamera(changeX,changeY);
+	}
 }

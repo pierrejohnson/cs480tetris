@@ -56,14 +56,14 @@ void Tetris::clearFieldMatrix() {
 //create a copy of an empty matrix with our block into it
 //Make draw matrix
 void Tetris::makePlayMatrix(Block block) {
-	cout<<endl<<"call to makePlayMatrix()"<<endl;
+//	cout<<endl<<"call to makePlayMatrix()"<<endl;
 	clearPlayMatrix();	
 	
 	int x = block.getCurrentX();	//ex: 14
-	cout<<endl<<"block current X: " << x;
+//	cout<<endl<<"block current X: " << x;
 	
 	int y = block.getCurrentY();
-	cout<<endl<<"block current Y: " << y;
+//	cout<<endl<<"block current Y: " << y;
 	
 	
 	for (int i = 0; i<4; i++) {
@@ -76,9 +76,9 @@ void Tetris::makePlayMatrix(Block block) {
 	}
 	//printing the playmatrix
 	for (int i = 0; i<20; i++) {
-		cout<<endl<<"playmatrix: ";
+	//	cout<<endl<<"playmatrix: ";
 		for (int j = 0; j<10; j++) {
-			cout<<playMatrix[i][j];
+		//	cout<<playMatrix[i][j];
 		}
 	}
 	
@@ -90,13 +90,13 @@ void Tetris::makePlayMatrix(Block block) {
 
 //Make play matrix
 void Tetris::moveBlock() {
-	cout<<endl<<"call to game.moveBlock()"<<endl;
+//	cout<<endl<<"call to game.moveBlock()"<<endl;
 	for (int i = 0; i<20; i++) {
-		cout<<endl<<"FM: "; 
+	//	cout<<endl<<"FM: "; 
 		for (int j = 0; j<10; j++) {
 			
 				fieldMatrix[i][j]+=getPlayCell(i, j);
-				cout<<fieldMatrix[i][j];
+		//		cout<<fieldMatrix[i][j];
 				
 		}
 		
@@ -110,13 +110,13 @@ bool Tetris::isIn(Block block, int xoff, int yoff) {
 	int x = block.getCurrentX()+xoff;
 	int y = block.getCurrentY()+yoff;
 	for (int i = 0; i<4; i++) {
-		cout<<endl;
-		cout<<"Compared :";
+	//	cout<<endl;
+	//	cout<<"Compared :";
 		for (int j = 0; j<4; j++) {
 			int num = block.getBlockMatrix().getCell(i, j);
-			cout<<num;
+	//		cout<<num;
 			if ((num!=0) && ((i+y>height-1) || (j+x>width-1) || (i+y<0) || (j+x<0))) {
-				cout<<"!";
+	//			cout<<"!";
 				in = false;
 			}
 		}
@@ -132,14 +132,15 @@ bool Tetris::isNoInter() {
 	makePlayMatrix(*currentBlock);
 	
 	for (int i = 0; i<20; i++) {
-		cout<<endl<<"fieldmatrix: "; 
+	//	cout<<endl<<"fieldmatrix: "; 
 		for (int j = 0; j<10; j++) {
 			//if we have a conflict
 			if((playMatrix[i][j]>0) && (fieldMatrix[i][j]>0)) {
-				cout<<"!"<<endl;
+			//	cout<<"!"<<endl;
 				ok = false;
 			}else 
-				cout <<fieldMatrix[i][j];
+			//	cout <<fieldMatrix[i][j];
+				ok = ok;
 			
 		}
 	}
@@ -203,7 +204,7 @@ bool Tetris::moveLeft() {
 	
 	
 	//might have a bug here with the checking "isNoInter()
-	cout<<endl<<"Call to game.moveLeft()"<<endl;
+//	cout<<endl<<"Call to game.moveLeft()"<<endl;
 	currentBlock->setCurrentX((currentBlock->getCurrentX())-1);
 	if (isIn(*currentBlock, 0, 0)&&isNoInter()) {
 		cout<<"Moving left"<<endl;
@@ -217,7 +218,7 @@ bool Tetris::moveLeft() {
 //Move block right
 bool Tetris::moveRight() {
 	bool success = false;
-	cout<<endl<<"Call to game.moveRight()"<<endl;
+//	cout<<endl<<"Call to game.moveRight()"<<endl;
 	currentBlock->setCurrentX((currentBlock->getCurrentX())+1);
 	if (isIn(*currentBlock, 0, 0)&&isNoInter()) {
 		cout<<"Moving right"<<endl;
@@ -231,7 +232,7 @@ bool Tetris::moveRight() {
 //Move block up ..... might be out of date
 bool Tetris::moveUp() {
 	bool success = false;
-	cout<<endl<<"Call to game.moveUp()"<<endl;
+//	cout<<endl<<"Call to game.moveUp()"<<endl;
 	currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
 	if (isIn(*currentBlock, 0, 0) && isNoInter()) {
 		success = true;
@@ -244,15 +245,15 @@ bool Tetris::moveUp() {
 //Move block down
 bool Tetris::moveDown() {
 	bool success = false;
-	cout<<endl<<"Call to game.moveDown()"<<endl;
+//	cout<<endl<<"Call to game.moveDown()"<<endl;
 	//if the current block is within an x offset of 0, and a y offset of 1
 	currentBlock->setCurrentY((currentBlock->getCurrentY())+1);
 	if (isIn(*currentBlock, 0, 0) && isNoInter()) {
-		cout<<endl<<"Moving Down from moveDown()"<<endl;
+//		cout<<endl<<"Moving Down from moveDown()"<<endl;
 		success = true;
 	}else{
 		currentBlock->setCurrentY((currentBlock->getCurrentY())-1);
-	cout<<endl<<"trying to move it back up from moveDown()"<<endl;
+//	cout<<endl<<"trying to move it back up from moveDown()"<<endl;
 	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
@@ -270,7 +271,7 @@ bool Tetris::dropDown(){
 //Rotate block CW
 bool Tetris::rotateCW() {
 	bool success = true;
-	cout<<endl<<"Call to game.rotateCW()"<<endl;
+//	cout<<endl<<"Call to game.rotateCW()"<<endl;
 	//Rotate
 	currentBlock->rotateCW();
 	//Check if it is still in playing field
@@ -307,11 +308,11 @@ bool Tetris::rotateCW() {
 bool Tetris::rotateCCW() {
 	bool success = true;
 	//Rotate
-	cout<<endl<<"Call to game.rotateCCW()"<<endl;
+//	cout<<endl<<"Call to game.rotateCCW()"<<endl;
 	currentBlock->rotateCCW();
 	//Check if it is still in playing field
 	if (!isIn(*currentBlock,0,0)) {
-		cout<<"Rotating"<<endl;
+	//	cout<<"Rotating"<<endl;
 		//If not, try to move it
 		if (currentBlock->getCurrentX()<0) {
 			success = moveRight();
@@ -352,7 +353,7 @@ bool Tetris::update() {
 	clearPlayMatrix();
 	//If no current block, make a new block
 	if (currentBlock == NULL) {
-		cout<<"Get new block"<<endl;
+	//	cout<<"Get new block"<<endl;
 		getBlock();
 		//Draw new updated state
 		return success;
@@ -367,7 +368,7 @@ bool Tetris::update() {
 	}
 	//If it can't move down
 	else if (!flag) {
-		cout<<"Stuck"<<endl;
+	//	cout<<"Stuck"<<endl;
 		//Merge Tetris matrix
 		moveBlock();
 		clearPlayMatrix();
@@ -382,7 +383,7 @@ bool Tetris::update() {
 }
 
 int Tetris::checkForLines() {
-	cout<<endl<<"call to game.checkForLines()"<<endl;
+//	cout<<endl<<"call to game.checkForLines()"<<endl;
 	int count = 0;
 	bool line = true;
 	for (int i = 0; i<20; i++) {
@@ -395,8 +396,8 @@ int Tetris::checkForLines() {
 		}
 		if (line){
 			count++;
-			cout<<endl<<"LINE detected"<<endl;
-			cout<<"count:"<<count<<endl;
+		//	cout<<endl<<"LINE detected"<<endl;
+		//	cout<<"count:"<<count<<endl;
 		}
 	}
 	return count;
