@@ -1,14 +1,33 @@
 #include <iostream>       
 #include <cstdlib>       
 #include <ctime>       
-#include "GL/glut.h"
-#include "GL/glu.h"
+//#include "GL/glut.h"
+//#include "GL/glu.h"
+
 #include "Tetris.h"
-//#include <GLUT/glut.h>
-//#include <OpenGL/glu.h>
+
+//mac headers
+#include <GLUT/glut.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/gl.h>
+
+
+#include <stdio.h>
+#include <stdlib.h>
+//#include <OpenAL/alut.h>
+//#include <OpenAL/al.h>
+//#include "OpenAl/alc.h"
+//#include "OpenAl/alctypes.h"
+//#include "OpenAl/altypes.h"
+
+
+
+//End of Mac Headers
+
 #include "Camera.h"
 //#include "AL/al.h"
 //#include "AL/alut.h"
+
 
 //Global Variables
 GLuint texture[3];
@@ -25,13 +44,13 @@ Camera camera;
 bool pressed = false;
 
 void update(int value) {
-	if (!(pause1)) {
-		//game.test();
-		if (!game.update())
-			pause1 = true;
-	}
-	glutPostRedisplay();
-	glutTimerFunc(1000, update, 1);
+    if (!(pause1)) {
+        //game.test();
+        if (!game.update())
+            pause1 = true;
+    }
+    glutPostRedisplay();
+    glutTimerFunc(1000, update, 1);
 }
 
 int ImageLoad(char *filename, Image *image) {
@@ -153,6 +172,7 @@ void LoadGLTextures() {
 		}
 
 		if (!ImageLoad("Resource Files/grass.bmp", image3)) {
+			cout<<"didn't load"<<endl; 
 			exit(1);
 		}
 
@@ -168,6 +188,7 @@ void LoadGLTextures() {
 ;
 
 void keyboard(unsigned char key, int x, int y) {
+
 	switch (key) {
 	case 'a':
 		camera.strafeCamera(-0.01);
@@ -242,11 +263,13 @@ void keyboard(unsigned char key, int x, int y) {
 	default:
 		break;
 
-	}
-	//if(!pressed)
-	glutPostRedisplay();
+
+    }
+    //if(!pressed)
+    glutPostRedisplay();
 }
 void spkeyboard(int key, int x, int y) {
+
 	switch (key) {
 	case GLUT_KEY_LEFT:
 		game.moveLeft();
@@ -267,13 +290,27 @@ void spkeyboard(int key, int x, int y) {
 	default:
 		break;
 
+
 	}
 	glutPostRedisplay();
+
 }
+
+
+
+//Draw Cube function
 
 void drawCube() {
 
+
+
 //	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	//Lighting code.          
+    float specReflection[] = {1.0f, 0.0f, 0.0f, 1.0f };
+    glMateriali(GL_FRONT, GL_SHININESS, 95);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
+    //End of lighting code. 
 
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);
@@ -304,6 +341,7 @@ void drawCube() {
 	glVertex3f(-0.5f, 0.5f, 0.5f);
 
 	glTexCoord2f(0.0f, 0.0f);
+    glNormal3f(0.0, 0.0, 1.0); 			//Normal for the cube face facing the user.
 	glVertex3f(-0.5f, 0.5f, 0.5f);
 	glTexCoord2f(1.0f, 0.0f);
 	glVertex3f(-0.5f, -0.5f, 0.5f);
@@ -332,9 +370,11 @@ void drawCube() {
 	glEnd();
 	//glColor3f(0, 0, 0);
 	//glutWireCube(1.0f);
+
 }
 
 void drawFrame() {
+
 	for (int i = -6; i<6; i++) {
 		glColor3f(1.0, 1.0, 1.0);
 		glLoadIdentity();
@@ -394,7 +434,7 @@ void drawFrame() {
 		glutWireCube(1.0f);
 		glPopMatrix();
 	}
-
+	
 	for (int i = 13; i<17; i++) {
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
@@ -405,15 +445,68 @@ void drawFrame() {
 		glPopMatrix();
 	}
 
+
 }
 
 void display(void) {
-	eyex = camera.PositionVector.x;
-	eyey = camera.PositionVector.y;
-	eyez = camera.PositionVector.z;
-	centerx = camera.ViewVector.x;
-	centery = camera.ViewVector.y;
-	centerz = camera.ViewVector.z;
+	
+	
+	
+    eyex = camera.PositionVector.x;
+    eyey = camera.PositionVector.y;
+    eyez = camera.PositionVector.z;
+    centerx = camera.ViewVector.x;
+    centery = camera.ViewVector.y;
+    centerz = camera.ViewVector.z;
+
+    glEnable(GL_LINE_SMOOTH);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    
+    
+    //Lighting code
+    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat mat_shininess[] = { 25.0 }; 
+ 	GLfloat light_position[] = { 1.0, 1.0, 5.0, 0.0 }; 
+ 	glShadeModel (GL_SMOOTH);
+
+ 	glEnable(GL_COLOR_MATERIAL);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);		//Jon- Set Material properties which will be assigned by gColor
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+ 	
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    //End of lighting code. 
+    
+    
+    glClearDepth(1.0);
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_TRUE);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    glLoadIdentity();
+    gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+    
+    
+    //Draw grid
+    glBegin(GL_QUADS);
+        glColor3f(0.6, 0.4, 0.5);
+        glVertex3f(25, -0.5, -25);
+        glVertex3f(-25, -0.5, -25);
+        glVertex3f(-25, -0.5, 25);
+        glVertex3f(25, -0.5, 25);
+    glEnd();
+    
+    glBegin(GL_LINES);
+    
+    
+    //Lighting code - Gives our floor some reflection properties.  
+    float specReflection[] = {1.0f, 1.0f, 1.0f, 1.0f };
+    glMateriali(GL_FRONT, GL_SHININESS, 96);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
+    //End of lighting code. 
 
 	glEnable(GL_LINE_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -424,6 +517,7 @@ void display(void) {
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glLoadIdentity();
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+	
 	//Draw grid
 	glBindTexture(GL_TEXTURE_2D, texture[2]);
 	glBegin(GL_QUADS);
@@ -431,6 +525,9 @@ void display(void) {
 	for(int i = -250;i<250;i+=10){//x
 		for(int j = -250;j<250;j+=10){//y
 			glTexCoord2f(0.0f, 0.0f);
+			
+			glNormal3f(0.0, 1.0, 0.0);	//Set normals for the floors.  
+			  
 			glVertex3f(i, -0.5, j+10);
 			glTexCoord2f(1.0f, 0.0f);
 			glVertex3f(i+10, -0.5, j+10);
@@ -441,10 +538,12 @@ void display(void) {
 		}
 	}
 	glEnd();
+	
 	//Draw Game Frame
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	drawFrame();
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	
 	//Draw Next Block
 	for (int i = 0; i<4; i++) {
 		for (int j = 0; j<4; j++) {
@@ -489,6 +588,7 @@ void display(void) {
 
 				glPopMatrix();
 
+
 			}
 			glColor3f(color*0.4f, color*0.1f, color*0.6f);
 			if (color>0 && color<8) {
@@ -505,11 +605,12 @@ void display(void) {
 				glPopMatrix();
 			}
 
-		}
-	}
 
-	glFlush();
-	glutSwapBuffers();
+        }
+    }
+
+    glFlush();
+    glutSwapBuffers();
 }
 
 void init() 
@@ -528,6 +629,7 @@ void init()
 	gluPerspective(40.0, (GLdouble)700/(GLdouble)700, 0.1f, 100.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, 700, 700); 
+
 	eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0.0f;
 	upy = 1.0f;
 	centery = 10.0f;
@@ -538,24 +640,26 @@ void init()
 	//every 1 seconds calls the update function
 	glutTimerFunc(1000, update, 1);
 
+
 }
 
 //Reshape Function
 void reshape(int x, int y) {
-	if (y == 0 || x == 0)
-		return; //Nothing is visible then, so return
+    if (y == 0 || x == 0)
+        return; //Nothing is visible then, so return
 
-	//Set a new projection matrix
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(40.0, (GLdouble)x/(GLdouble)y, 5, 100.0);
+    //Set a new projection matrix
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(40.0, (GLdouble)x/(GLdouble)y, 5, 100.0);
 
-	glMatrixMode(GL_MODELVIEW);
-	glViewport(0, 0, x, y); //Use the whole window for rendering
-	glutPostRedisplay();
+    glMatrixMode(GL_MODELVIEW);
+    glViewport(0, 0, x, y); //Use the whole window for rendering
+    glutPostRedisplay();
 }
 
 void mouse(int button, int state, int x, int y) {
+	
 	cout<<state<<endl;
 	if (state == GLUT_DOWN)
 		pressed = true;
@@ -563,16 +667,20 @@ void mouse(int button, int state, int x, int y) {
 		pressed = false;
 	camera.mouse(button, state, x, y);
 	glutPostRedisplay();
+
 }
+
 
 void mouseMovement(int x, int y) {
 	camera.mouseMovement(x, y);
 	glutPostRedisplay();
+
 }
 
 //Main function
 //Sets up window and callback funcions
 int main(int argc, char **argv) {
+	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
 	glutInitWindowSize(700, 700);
@@ -587,4 +695,5 @@ int main(int argc, char **argv) {
 	init();
 	glutMainLoop();
 	return 0;
+
 }
