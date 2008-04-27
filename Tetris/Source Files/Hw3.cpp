@@ -524,7 +524,21 @@ void display(void) {
 	for (int i = 0; i<4; i++) {
 		for (int j = 0; j<4; j++) {
 			int color = game.nextBlock->getBlockMatrix().getCell(i, j);
-			glColor3f(color*0.4f, color*0.1f, color*0.6f);
+			if(color ==1){ //cyan
+				glColor3f(0.0,1.0,1.0);
+			}else if(color ==2){ //blue
+				glColor3f(0.0,0.0,1.0);
+			}else if(color ==3){ //orange
+				glColor3f(1.0,0.5,0.0);
+			}else if(color ==4){ //yellow
+				glColor3f(1.0,1.0,0.0);
+			}else if(color ==5){ //green
+				glColor3f(0.0,1.0,0.0);
+			}else if(color ==6){ //purple
+				glColor3f(0.8,0.1,0.9);
+			}else if(color ==7){ //red
+				glColor3f(1.0,0.0,0.0);
+			}
 			GLfloat x = j+7;
 			GLfloat y = 16-i;
 			if (color>0 && color<8) {
@@ -547,10 +561,23 @@ void display(void) {
 		for (int j = 0; j<10; j++) {
 			int color = game.getFieldCell(i, j);
 			int color1 = game.getPlayCell(i, j);
-			glColor3f(color*0.4f, color*0.1f, color*0.6f);
 			GLfloat x = j-5;
 			GLfloat y = 20-i;
-			glColor3f(color1*0.4f, color1*0.1f, color1*0.6f);
+			if(color1 ==1){ //cyan
+				glColor3f(0.0,0.9,0.9);
+			}else if(color1 ==2){ //blue
+				glColor3f(0.0,0.0,0.9);
+			}else if(color1 ==3){ //orange
+				glColor3f(0.9,0.6,0.0);
+			}else if(color1 ==4){ //yellow
+				glColor3f(0.9,0.9,0.0);
+			}else if(color1 ==5){ //green
+				glColor3f(0.0,0.9,0.0);
+			}else if(color1 ==6){ //purple
+				glColor3f(0.8,0.1,0.9);
+			}else if(color1 ==7){ //red
+				glColor3f(0.9,0.0,0.0);
+			}
 			if (color1>0 && color1<8) {
 				glLoadIdentity();
 				gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx,
@@ -566,7 +593,21 @@ void display(void) {
 
 
 			}
-			glColor3f(color*0.4f, color*0.1f, color*0.6f);
+			if(color ==1){ //cyan
+				glColor3f(0.0,1.0,1.0);
+			}else if(color ==2){ //blue
+				glColor3f(0.0,0.0,1.0);
+			}else if(color ==3){ //orange
+				glColor3f(1.0,0.5,0.0);
+			}else if(color ==4){ //yellow
+				glColor3f(1.0,1.0,0.0);
+			}else if(color ==5){ //green
+				glColor3f(0.0,1.0,0.0);
+			}else if(color ==6){ //purple
+				glColor3f(0.8,0.1,0.9);
+			}else if(color ==7){ //red
+				glColor3f(1.0,0.0,0.0);
+			}
 			if (color>0 && color<8) {
 				glLoadIdentity();
 				gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx,
