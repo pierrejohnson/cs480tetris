@@ -113,7 +113,7 @@ void LoadGLTextures() {
 		exit(0);
 	}
 
-	if (!ImageLoad("texture1.bmp", image1)) {
+	if (!ImageLoad("Resource Files/texture1.bmp", image1)) {
 		exit(1);
 	}
 
