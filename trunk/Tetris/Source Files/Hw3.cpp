@@ -1,15 +1,15 @@
 #include <iostream>       
 #include <cstdlib>       
 #include <ctime>       
-//#include "GL/glut.h"
-//#include "GL/glu.h"
+#include "GL/glut.h"
+#include "GL/glu.h"
 
 #include "Tetris.h"
 
 //mac headers
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
-#include <OpenGL/gl.h>
+//#include <GLUT/glut.h>
+//#include <OpenGL/glu.h>
+//#include <OpenGL/gl.h>
 
 
 #include <stdio.h>
@@ -449,9 +449,6 @@ void drawFrame() {
 }
 
 void display(void) {
-	
-	
-	
     eyex = camera.PositionVector.x;
     eyey = camera.PositionVector.y;
     eyez = camera.PositionVector.z;
@@ -467,7 +464,7 @@ void display(void) {
     //Lighting code
     GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat mat_shininess[] = { 25.0 }; 
- 	GLfloat light_position[] = { 1.0, 1.0, 5.0, 0.0 }; 
+ 	GLfloat light_position[] = { 1.0, 20.0, 25.0, 0.0 }; 
  	glShadeModel (GL_SMOOTH);
 
  	glEnable(GL_COLOR_MATERIAL);
@@ -480,28 +477,7 @@ void display(void) {
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     //End of lighting code. 
-    
-    
-    glClearDepth(1.0);
-    glDepthFunc(GL_LEQUAL);
-    glDepthMask(GL_TRUE);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    glLoadIdentity();
-    gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
-    
-    
-    //Draw grid
-    glBegin(GL_QUADS);
-        glColor3f(0.6, 0.4, 0.5);
-        glVertex3f(25, -0.5, -25);
-        glVertex3f(-25, -0.5, -25);
-        glVertex3f(-25, -0.5, 25);
-        glVertex3f(25, -0.5, 25);
-    glEnd();
-    
-    glBegin(GL_LINES);
-    
-    
+
     //Lighting code - Gives our floor some reflection properties.  
     float specReflection[] = {1.0f, 1.0f, 1.0f, 1.0f };
     glMateriali(GL_FRONT, GL_SHININESS, 96);
@@ -695,5 +671,4 @@ int main(int argc, char **argv) {
 	init();
 	glutMainLoop();
 	return 0;
-
 }

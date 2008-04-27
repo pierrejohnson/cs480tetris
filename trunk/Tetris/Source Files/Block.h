@@ -4,8 +4,8 @@
 #include <cstdlib>		
 #include <ctime>			
 //#include "GLUT/glut.h"
-#include <GLUT/glut.h>
-#//include <GL/glut.h>
+//#include <GLUT/glut.h>
+#include <GL/glut.h>
 #include "Matrix.h"
 
 using namespace std;
