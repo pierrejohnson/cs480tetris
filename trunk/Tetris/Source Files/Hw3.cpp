@@ -1,17 +1,23 @@
-#include <iostream>		
-#include <cstdlib>		
-#include <ctime>		
+#include <iostream>       
+#include <cstdlib>       
+#include <ctime>       
 #include "GL/glut.h"
 #include "GL/glu.h"
 #include "Tetris.h"
 //#include <GLUT/glut.h>
 //#include <OpenGL/glu.h>
 #include "Camera.h"
-#include "AL/al.h"
-#include "AL/alut.h"
-
+//#include "AL/al.h"
+//#include "AL/alut.h"
 
 //Global Variables
+GLuint texture[2];
+struct Image {
+	unsigned long sizeX;
+	unsigned long sizeY;
+	char *data;
+};
+typedef struct Image Image;
 Tetris game;
 bool pause1 = false;
 GLfloat eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
@@ -19,8 +25,6 @@ Camera camera;
 GLuint texture1;
 bool pressed = false;
 
-//Timer function
-//Calls the game update function
 void update(int value) {
 	if (!(pause1)) {
 		//game.test();
@@ -31,53 +35,143 @@ void update(int value) {
 	glutTimerFunc(1000, update, 1);
 }
 
-//Keyboard function
-//When key is pressed, perform action here
+int ImageLoad(char *filename, Image *image) {
+	FILE *file;
+	unsigned long size;
+	unsigned long i;
+	unsigned short int planes;
+	unsigned short int bpp;
+	char temp;
+
+	if ((file = fopen(filename, "rb"))==NULL) {
+		printf("File Not Found : %s\n", filename);
+		return 0;
+	}
+
+	fseek(file, 18, SEEK_CUR);
+
+	if ((i = fread(&image->sizeX, 4, 1, file)) != 1) {
+		printf("Error reading width from %s.\n", filename);
+		return 0;
+	}
+	printf("Width of %s: %lu\n", filename, image->sizeX);
+
+	if ((i = fread(&image->sizeY, 4, 1, file)) != 1) {
+		printf("Error reading height from %s.\n", filename);
+		return 0;
+	}
+	printf("Height of %s: %lu\n", filename, image->sizeY);
+
+	size = image->sizeX * image->sizeY * 3;
+
+	if ((fread(&planes, 2, 1, file)) != 1) {
+		printf("Error reading planes from %s.\n", filename);
+		return 0;
+	}
+	if (planes != 1) {
+		printf("Planes from %s is not 1: %u\n", filename, planes);
+		return 0;
+	}
+
+	if ((i = fread(&bpp, 2, 1, file)) != 1) {
+		printf("Error reading bpp from %s.\n", filename);
+		return 0;
+	}
+	if (bpp != 24) {
+		printf("Bpp from %s is not 24: %u\n", filename, bpp);
+		return 0;
+	}
+
+	fseek(file, 24, SEEK_CUR);
+
+	image->data = (char *) malloc(size);
+	if (image->data == NULL) {
+		printf("Error allocating memory for color-corrected image data");
+		return 0;
+	}
+
+	if ((i = fread(image->data, size, 1, file)) != 1) {
+		printf("Error reading image data from %s.\n", filename);
+		return 0;
+	}
+
+	for (i=0; i<size; i+=3) {
+		temp = image->data[i];
+		image->data[i] = image->data[i+2];
+		image->data[i+2] = temp;
+	}
+
+	return 1;
+}
+
+void LoadGLTextures() {
+	Image *image1;
+
+	image1 = (Image *) malloc(sizeof(Image));
+	if (image1 == NULL) {
+		printf("Error allocating space for image");
+		exit(0);
+	}
+
+	if (!ImageLoad("texture1.bmp", image1)) {
+		exit(1);
+	}
+
+	glGenTextures(1, &texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, image1->sizeX, image1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image1->data);
+}
+;
+
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 	case 'a':
 		camera.strafeCamera(-0.01);
-		
+
 		break;
 	case 'd':
 		camera.strafeCamera(0.01);
-		
+
 		break;
 	case 'w':
 		camera.moveCamera(0.01);
-		
+
 		break;
 	case 's':
 		camera.moveCamera(-0.01);
 		break;
 	case 'r':
 		camera.liftCamera(0.1);
-		
+
 		break;
 	case 'f':
 		camera.liftCamera(-0.1);
-		
+
 		break;
 	case 'g':
 		camera.rotateCamera(10, 0);
-		
+
 		break;
 	case 'j':
 		camera.rotateCamera(-10, 0);
-		
+
 		break;
 	case 'y':
 		camera.rotateCamera(0, 50);
-		
+
 		break;
 	case 'h':
 		camera.rotateCamera(0, -50);
-		
+
 		break;
 	case 'o':
 		game.moveBlock();
 		game.getBlock();
-		
+
 		break;
 	case 'p':
 		if (pause1)
@@ -88,22 +182,23 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'v':
 		if (pause1) {
 			game.moveUp();
-			
+
 		}
 		break;
 	case 'm':
-		//Camera
-		eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0.0f;
+		eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz
+				= 0.0f;
 		upy = 1.0f;
 		centery = 10.0f;
 		eyey = 10.0f;
 		eyez = 35.0f;
-		camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
-		
+		camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy,
+				upz);
+
 		break;
 	case ' ':
 		game.dropDown();
-		
+
 	default:
 		break;
 
@@ -115,108 +210,129 @@ void spkeyboard(int key, int x, int y) {
 	switch (key) {
 	case GLUT_KEY_LEFT:
 		game.moveLeft();
-		
+
 		break;
 	case GLUT_KEY_RIGHT:
 		game.moveRight();
-		
+
 		break;
 	case GLUT_KEY_UP:
 		game.rotateCCW();
-		
+
 		break;
 	case GLUT_KEY_DOWN:
 		game.moveDown();
-		
+
 		break;
 	default:
 		break;
 
 	}
-		glutPostRedisplay();
+	glutPostRedisplay();
 }
 
-//Draw Cube function
 void drawCube() {
+
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
 	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 0.0f);
 	glVertex3f( 0.5f, 0.5f, 0.5f);
-	glVertex3f( 0.5f, -0.5f, 0.5f); 
-	glVertex3f( 0.5f, -0.5f, -0.5f); 
-	glVertex3f( 0.5f, 0.5f, -0.5f); 
-	
-	glVertex3f( 0.5f, 0.5f, -0.5f); 
-	glVertex3f( 0.5f, -0.5f, -0.5f); 
-	glVertex3f(-0.5f, -0.5f, -0.5f); 
-	glVertex3f(-0.5f, 0.5f, -0.5f); 
-	
-	glVertex3f(-0.5f, 0.5f, -0.5f); 
-	glVertex3f(-0.5f, -0.5f, -0.5f); 
-	glVertex3f(-0.5f, -0.5f, 0.5f); 
-	glVertex3f(-0.5f, 0.5f, 0.5f); 
-	
-	glVertex3f(-0.5f, 0.5f, 0.5f); 
-	glVertex3f(-0.5f, -0.5f, 0.5f); 
-	glVertex3f( 0.5f, -0.5f, 0.5f); 
-	glVertex3f( 0.5f, 0.5f, 0.5f); 
-	
-	glVertex3f(-0.5f, 0.5f, -0.5f); 
-	glVertex3f(-0.5f, 0.5f, 0.5f); 
-	glVertex3f( 0.5f, 0.5f, 0.5f); 
-	glVertex3f( 0.5f, 0.5f, -0.5f); 
-	
-	glVertex3f(-0.5f, -0.5f, 0.5f); 
-	glVertex3f(-0.5f, -0.5f, -0.5f); 
-	glVertex3f( 0.5f, -0.5f, -0.5f); 
-	glVertex3f( 0.5f, -0.5f, 0.5f); 
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f( 0.5f, -0.5f, 0.5f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f( 0.5f, -0.5f, -0.5f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f( 0.5f, 0.5f, -0.5f);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f( 0.5f, 0.5f, -0.5f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f( 0.5f, -0.5f, -0.5f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(-0.5f, -0.5f, -0.5f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-0.5f, 0.5f, -0.5f);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-0.5f, 0.5f, -0.5f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-0.5f, -0.5f, -0.5f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(-0.5f, -0.5f, 0.5f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-0.5f, 0.5f, 0.5f);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-0.5f, 0.5f, 0.5f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-0.5f, -0.5f, 0.5f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f( 0.5f, -0.5f, 0.5f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f( 0.5f, 0.5f, 0.5f);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-0.5f, 0.5f, -0.5f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-0.5f, 0.5f, 0.5f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f( 0.5f, 0.5f, 0.5f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f( 0.5f, 0.5f, -0.5f);
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-0.5f, -0.5f, 0.5f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-0.5f, -0.5f, -0.5f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f( 0.5f, -0.5f, -0.5f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f( 0.5f, -0.5f, 0.5f);
 	glEnd();
-	glColor3f(0, 0, 0);
-	glutWireCube(1.0f);
+	//glColor3f(0, 0, 0);
+	//glutWireCube(1.0f);
 }
 
-//Draw Game Frame Function
 void drawFrame() {
 	for (int i = -6; i<6; i++) {
 		glColor3f(1.0, 1.0, 1.0);
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
-		glTranslated(i, 21, 0);
-	//	glutSolidCube(1.0f);
-	//	glColor3f(0, 0, 0);
-	//	glutWireCube(1.0f);
+		glTranslated(i, 20, 0);
 		drawCube();
+		glColor3f(0, 0, 0);
+		glutWireCube(1.0f);
 		glPopMatrix();
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glTranslated(i, 0, 0);
-	//	glutSolidCube(1.0f);
-	//	glColor3f(0, 0, 0);
-	//	glutWireCube(1.0f);
 		drawCube();
+		glColor3f(0, 0, 0);
+		glutWireCube(1.0f);
 		glPopMatrix();
 	}
-	for (int i = -10; i<11; i++) {
+	for (int i = -10; i<10; i++) {
 		glColor3f(1.0, 1.0, 1.0);
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glTranslated(-6, i+10, 0);
-	//	glutSolidCube(1.0f);
-	//	glColor3f(0, 0, 0);
-	//	glutWireCube(1.0f);
 		drawCube();
+		glColor3f(0, 0, 0);
+		glutWireCube(1.0f);
 		glPopMatrix();
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glTranslated(5, i+10, 0);
-	//	glutSolidCube(1.0f);
-	//	glColor3f(0, 0, 0);
-	//	glutWireCube(1.0f);
 		drawCube();
+		glColor3f(0, 0, 0);
+		glutWireCube(1.0f);
 		glPopMatrix();
 	}
 	glLoadIdentity();
@@ -225,19 +341,17 @@ void drawFrame() {
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(i, 12, 0);
-	//	glutSolidCube(1.0f);
-	//	glColor3f(0, 0, 0);
-	//	glutWireCube(1.0f);
 		drawCube();
+		glColor3f(0, 0, 0);
+		glutWireCube(1.0f);
 		glPopMatrix();
 
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(i, 17, 0);
-	//	glutSolidCube(1.0f);
-	//	glColor3f(0, 0, 0);
-	//	glutWireCube(1.0f);
 		drawCube();
+		glColor3f(0, 0, 0);
+		glutWireCube(1.0f);
 		glPopMatrix();
 	}
 
@@ -245,16 +359,14 @@ void drawFrame() {
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(12, i, 0);
-	//	glutSolidCube(1.0f);
-	//	glColor3f(0, 0, 0);
-	//	glutWireCube(1.0f);
 		drawCube();
+		glColor3f(0, 0, 0);
+		glutWireCube(1.0f);
 		glPopMatrix();
 	}
 
 }
-//Display function
-//When screen is redrawn, redraw here
+
 void display(void) {
 	eyex = camera.PositionVector.x;
 	eyey = camera.PositionVector.y;
@@ -274,11 +386,11 @@ void display(void) {
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 	//Draw grid
 	glBegin(GL_QUADS);
-		glColor3f(0.6, 0.4, 0.5);
-		glVertex3f(25, -0.5, -25);
-		glVertex3f(-25, -0.5, -25);
-		glVertex3f(-25, -0.5, 25);
-		glVertex3f(25, -0.5, 25);
+	glColor3f(0.6, 0.4, 0.5);
+	glVertex3f(25, -0.5, -25);
+	glVertex3f(-25, -0.5, -25);
+	glVertex3f(-25, -0.5, 25);
+	glVertex3f(25, -0.5, 25);
 	glEnd();
 	glBegin(GL_LINES);
 	for (float i = -250; i <= 250; i += 10) {
@@ -305,6 +417,8 @@ void display(void) {
 				glPushMatrix();
 				glTranslated(x, y, 0);
 				drawCube();
+				glColor3f(0, 0, 0);
+				glutWireCube(1.0f);
 				glPopMatrix();
 			}
 		}
@@ -324,10 +438,10 @@ void display(void) {
 						upy, upz);
 				glPushMatrix();
 				glTranslated(x, y, 0);
-			//	glutSolidCube(1.0f);
-			//	glColor3f(0, 0, 0);
-			//	glutWireCube(1.0f);
 				drawCube();
+				glColor3f(0, 0, 0);
+				glutWireCube(1.0f);
+
 				glPopMatrix();
 
 			}
@@ -338,10 +452,10 @@ void display(void) {
 						upy, upz);
 				glPushMatrix();
 				glTranslated(x, y, 0);
-			//	glutSolidCube(1.0f);
-			//	glColor3f(0, 0, 0);
-			//	glutWireCube(1.0f);
 				drawCube();
+				glColor3f(0, 0, 0);
+				glutWireCube(1.0f);
+
 				glPopMatrix();
 			}
 
@@ -352,42 +466,30 @@ void display(void) {
 	glutSwapBuffers();
 }
 
-//Load Textures
-void loadTextures() {
+void init() 
+{
+	LoadGLTextures(); 
+	glEnable(GL_TEXTURE_2D); 
+	glClearColor(0.0f, 0.0f, 1.0f, 0.0f); 
+	glClearDepth(1.0); 
+	glDepthFunc(GL_LEQUAL); 
+	glEnable(GL_DEPTH_TEST); 
+	glShadeModel(GL_SMOOTH); 
 
-}
-
-/*Initialization function
- * Initialize material property, light source, 
- * lighting model, and depth buffer.
- */
-void init(void) {
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	//Angle of view:40 degrees
-	//Near clipping plane distance: 0.5
-	//Far clipping plane distance: 20.0
-	gluPerspective(40.0, (GLdouble)700/(GLdouble)700, 5, 100.0);
+	glLoadIdentity(); 
+
+	gluPerspective(40.0, (GLdouble)700/(GLdouble)700, 0.1f, 100.0f);
 	glMatrixMode(GL_MODELVIEW);
-	glViewport(0, 0, 700, 700); //Use the whole window for rendering
-	//Texture Map
+	glViewport(0, 0, 700, 700); 
 	glGenTextures( 1, &texture1);
-	//Camera
+
 	eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0.0f;
 	upy = 1.0f;
 	centery = 10.0f;
 	eyey = 10.0f;
 	eyez = 35.0f;
 	camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
-/*	glEnable(GL_LINE_SMOOTH);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glClearDepth(1.0);
-	glDepthFunc(GL_NICEST);
-	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-*/	
 	game.Initialize();
 	//every 1 seconds calls the update function
 	glutTimerFunc(1000, update, 1);
@@ -409,9 +511,9 @@ void reshape(int x, int y) {
 	glutPostRedisplay();
 }
 
-void mouse(int button, int state, int x, int y){
+void mouse(int button, int state, int x, int y) {
 	cout<<state<<endl;
-	if(state == GLUT_DOWN)
+	if (state == GLUT_DOWN)
 		pressed = true;
 	else
 		pressed = false;
@@ -419,19 +521,18 @@ void mouse(int button, int state, int x, int y){
 	glutPostRedisplay();
 }
 
-void mouseMovement(int x, int y){
-	camera.mouseMovement(x,y);
+void mouseMovement(int x, int y) {
+	camera.mouseMovement(x, y);
 	glutPostRedisplay();
 }
 
 //Main function
 //Sets up window and callback funcions
 int main(int argc, char **argv) {
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowPosition(50, 50);
-	glutInitWindowSize(700, 700);
 	glutInit(&argc, argv);
-	init();
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
+	glutInitWindowSize(700, 700);
+	glutInitWindowPosition(50, 50);
 	glutCreateWindow("Tetris");
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
@@ -439,8 +540,7 @@ int main(int argc, char **argv) {
 	glutSpecialFunc(spkeyboard);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouseMovement);
+	init();
 	glutMainLoop();
 	return 0;
 }
-
-
