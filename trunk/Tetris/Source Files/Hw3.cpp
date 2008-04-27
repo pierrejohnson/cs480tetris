@@ -11,7 +11,7 @@
 //#include "AL/alut.h"
 
 //Global Variables
-GLuint texture[2];
+GLuint texture[3];
 struct Image {
 	unsigned long sizeX;
 	unsigned long sizeY;
@@ -22,7 +22,6 @@ Tetris game;
 bool pause1 = false;
 GLfloat eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 Camera camera;
-GLuint texture1;
 bool pressed = false;
 
 void update(int value) {
@@ -124,6 +123,47 @@ void LoadGLTextures() {
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, image1->sizeX, image1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image1->data);
+	
+	Image *image2;
+
+	image2 = (Image *) malloc(sizeof(Image));
+	if (image2 == NULL) {
+		printf("Error allocating space for image");
+		exit(0);
+	}
+
+	if (!ImageLoad("Resource Files/texture2.bmp", image2)) {
+		exit(1);
+	}
+
+	glGenTextures(2, &texture[1]);
+	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, image2->sizeX, image2->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image2->data);
+	
+	Image *image3;
+
+		image3 = (Image *) malloc(sizeof(Image));
+		if (image3 == NULL) {
+			printf("Error allocating space for image");
+			exit(0);
+		}
+
+		if (!ImageLoad("Resource Files/grass.bmp", image3)) {
+			exit(1);
+		}
+
+		glGenTextures(3, &texture[2]);
+		glBindTexture(GL_TEXTURE_2D, texture[2]);
+		
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, image3->sizeX, image3->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image3->data);
+	
 }
 ;
 
@@ -233,7 +273,7 @@ void spkeyboard(int key, int x, int y) {
 
 void drawCube() {
 
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
+//	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);
@@ -385,24 +425,26 @@ void display(void) {
 	glLoadIdentity();
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 	//Draw grid
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
 	glBegin(GL_QUADS);
-	glColor3f(0.6, 0.4, 0.5);
-	glVertex3f(25, -0.5, -25);
-	glVertex3f(-25, -0.5, -25);
-	glVertex3f(-25, -0.5, 25);
-	glVertex3f(25, -0.5, 25);
-	glEnd();
-	glBegin(GL_LINES);
-	for (float i = -250; i <= 250; i += 10) {
-		glColor3f(1.0, 1.0, 0.5);
-		glVertex3f(-25, -0.5, i/10);
-		glVertex3f(25, -0.5, i/10);
-		glVertex3f(i/10, -0.5, -25);
-		glVertex3f(i/10, -0.5, 25);
+	glColor3f(1.0, 1.0, 1.0);
+	for(int i = -250;i<250;i+=10){//x
+		for(int j = -250;j<250;j+=10){//y
+			glTexCoord2f(0.0f, 0.0f);
+			glVertex3f(i, -0.5, j+10);
+			glTexCoord2f(1.0f, 0.0f);
+			glVertex3f(i+10, -0.5, j+10);
+			glTexCoord2f(1.0f, 1.0f);
+			glVertex3f(i+10, -0.5, j);
+			glTexCoord2f(0.0f, 1.0f);
+			glVertex3f(i, -0.5, j);
+		}
 	}
 	glEnd();
 	//Draw Game Frame
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	drawFrame();
+	glBindTexture(GL_TEXTURE_2D, texture[1]);
 	//Draw Next Block
 	for (int i = 0; i<4; i++) {
 		for (int j = 0; j<4; j++) {
@@ -416,7 +458,9 @@ void display(void) {
 						upy, upz);
 				glPushMatrix();
 				glTranslated(x, y, 0);
+				glBindTexture(GL_TEXTURE_2D, texture[1]);
 				drawCube();
+				glBindTexture(GL_TEXTURE_2D, texture[0]);
 				glColor3f(0, 0, 0);
 				glutWireCube(1.0f);
 				glPopMatrix();
@@ -438,6 +482,7 @@ void display(void) {
 						upy, upz);
 				glPushMatrix();
 				glTranslated(x, y, 0);
+				glBindTexture(GL_TEXTURE_2D, texture[1]);
 				drawCube();
 				glColor3f(0, 0, 0);
 				glutWireCube(1.0f);
@@ -452,6 +497,7 @@ void display(void) {
 						upy, upz);
 				glPushMatrix();
 				glTranslated(x, y, 0);
+				glBindTexture(GL_TEXTURE_2D, texture[1]);
 				drawCube();
 				glColor3f(0, 0, 0);
 				glutWireCube(1.0f);
@@ -482,8 +528,6 @@ void init()
 	gluPerspective(40.0, (GLdouble)700/(GLdouble)700, 0.1f, 100.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, 700, 700); 
-	glGenTextures( 1, &texture1);
-
 	eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz = 0.0f;
 	upy = 1.0f;
 	centery = 10.0f;
