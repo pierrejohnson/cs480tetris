@@ -1,7 +1,8 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
-#include <gl\glut.h>
+//#include <gl\glut.h>
+#include <GLUT/glut.h>
 #include "math.h"
 #include <iostream>
 #define PI PI 3.1415265359
