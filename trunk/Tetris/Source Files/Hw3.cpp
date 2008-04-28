@@ -17,12 +17,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <openal/alut.h>
-#include "OpenAL/al.h"
+#include <OpenAl/alut.h>
+
+
+
 #include <OpenAL/al.h>
-#include "OpenAl/alc.h"
-#include "OpenAl/alctypes.h"
-#include "OpenAl/altypes.h"
+
+#include <OpenAl/alc.h>
+#include <OpenAl/alctypes.h>
+#include <OpenAl/altypes.h>
 
 //End of Mac Headers
 
@@ -360,7 +363,9 @@ void drawCube() {
     glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
     //End of lighting code. 
 
+    
 	glBegin(GL_QUADS);
+	
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3f( 0.5f, 0.5f, 0.5f);
 	glTexCoord2f(1.0f, 0.0f);
@@ -396,7 +401,7 @@ void drawCube() {
 	glTexCoord2f(1.0f, 1.0f);
 	glVertex3f( 0.5f, -0.5f, 0.5f);
 	glTexCoord2f(0.0f, 1.0f);
-
+	glVertex3f( 0.5f, 0.5f, 0.5f);
 
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3f(-0.5f, 0.5f, -0.5f);
@@ -416,8 +421,7 @@ void drawCube() {
 	glTexCoord2f(0.0f, 1.0f);
 	glVertex3f( 0.5f, -0.5f, 0.5f);
 	glEnd();
-	//glColor3f(0, 0, 0);
-	//glutWireCube(1.0f);
+
 
 }
 
@@ -456,6 +460,7 @@ void drawFrame() {
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
+		
 		glColor3f(1.0, 1.0, 1.0);
 		glTranslated(5, i+10, 0);
 		drawCube();
@@ -510,9 +515,9 @@ void display(void) {
     
     
     //Lighting code
-    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat mat_shininess[] = { 25.0 }; 
- 	GLfloat light_position[] = { 1.0, 20.0, 25.0, 0.0 }; 
+    GLfloat mat_specular[] = { 0.7, 0.7, 0.7, 1.0 };
+    GLfloat mat_shininess[] = { 1.5 }; 
+ 	GLfloat light_position[] = { 1.0, 15.0, 50.0, 1.0 }; //{ 1.0, 4.0, 5.0, 0.0 };  - To show the variable light source. 
  	glShadeModel (GL_SMOOTH);
 
  	glEnable(GL_COLOR_MATERIAL);
@@ -526,9 +531,9 @@ void display(void) {
     glEnable(GL_LIGHT0);
     //End of lighting code. 
 
-    //Lighting code - Gives our floor some reflection properties.  
+    //Lighting code  
     float specReflection[] = {1.0f, 1.0f, 1.0f, 1.0f };
-    glMateriali(GL_FRONT, GL_SHININESS, 96);
+    glMateriali(GL_FRONT, GL_SHININESS, 90);
     glMaterialfv(GL_FRONT, GL_SPECULAR, specReflection);
     //End of lighting code. 
 
@@ -682,7 +687,9 @@ void init()
 {
 	LoadGLTextures(); 
 	glEnable(GL_TEXTURE_2D); 
-	glClearColor(0.0f, 0.0f, 1.0f, 0.0f); 
+	
+	glClearColor(0.52f, 0.81f, 1.0f, 0.0f);
+	
 	glClearDepth(1.0); 
 	glDepthFunc(GL_LEQUAL); 
 	glEnable(GL_DEPTH_TEST); 
