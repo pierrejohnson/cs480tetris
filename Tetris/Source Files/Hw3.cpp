@@ -221,6 +221,26 @@ void LoadGLTextures() {
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, image3->sizeX, image3->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image3->data);
+	
+	Image *image4;
+
+		image4 = (Image *) malloc(sizeof(Image));
+		if (image4 == NULL) {
+			printf("Error allocating space for image");
+			exit(0);
+		}
+
+		if (!ImageLoad("Resource Files/brick.bmp", image4)) {
+			exit(1);
+		}
+
+		glGenTextures(4, &texture[3]);
+		glBindTexture(GL_TEXTURE_2D, texture[3]);
+
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, image4->sizeX, image4->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image4->data);
 
 }
 ;
@@ -673,13 +693,28 @@ void display(void) {
 			}
 		}
 	}else{
+		glLoadIdentity();
+		glColor3f(1,1,1);
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glBindTexture(GL_TEXTURE_2D, texture[3]);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f( -15.0f, -5.0f, 0.0f);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex3f( 15.0f, -5.0f, 0.0f);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex3f( 15.0f, 25.0f, 0.0f);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex3f( -15.0f, 25.0f, 0.0f);
+		glEnd();
+		
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glEnable(GL_LINE_SMOOTH);
 		glLineWidth(5.0);
 		char *message;
 		glLoadIdentity();
-		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx+0.05, upy, upz);
 		glPushMatrix();
 		glColor3f(0,0,0);
 		glTranslatef(-10,14,0);
@@ -690,7 +725,7 @@ void display(void) {
 		glPopMatrix();
 		
 		glLoadIdentity();
-		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx-0.1, upy, upz);
 		glPushMatrix();
 		glColor3f(0,0,0);
 		glTranslatef(-9,19,0);
@@ -704,7 +739,7 @@ void display(void) {
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glColor3f(0,0,0);
-		glTranslatef(-7,10,0);
+		glTranslatef(-7,9,0);
 		glScaled(0.01f,0.01f,0.01f);
 		for(message = "Jonathan  Chan";*message;message++){
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
@@ -715,7 +750,7 @@ void display(void) {
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glColor3f(0,0,0);
-		glTranslatef(-7,8,0);
+		glTranslatef(-7,6,0);
 		glScaled(0.01f,0.01f,0.01f);
 		for(message = "Pierre Johnson";*message;message++){
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
@@ -726,7 +761,7 @@ void display(void) {
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glColor3f(0,0,0);
-		glTranslatef(-7,6,0);
+		glTranslatef(-7,3,0);
 		glScaled(0.01f,0.01f,0.01f);
 		for(message = "Daniel Ramirez";*message;message++){
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
@@ -737,7 +772,7 @@ void display(void) {
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glColor3f(0,0,0);
-		glTranslatef(-5.5,4,0);
+		glTranslatef(-5.5,0,0);
 		glScaled(0.01f,0.01f,0.01f);
 		for(message = "Daniel Wong";*message;message++){
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
