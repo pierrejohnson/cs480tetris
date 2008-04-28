@@ -2,29 +2,29 @@
 #include <cstdlib>       
 #include <ctime>       
 //PC Headers
-#include "GL/glut.h"
-#include "GL/glu.h"
-#include "AL/al.h"
-#include "AL/alut.h"
+//#include "GL/glut.h"
+//#include "GL/glu.h"
+//#include "AL/al.h"
+//#include "AL/alut.h"
 
 #include "Tetris.h"
 
 //mac headers
-//#include <GLUT/glut.h>
-//#include <OpenGL/glu.h>
-//#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/gl.h>
 
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <OpenAl/alut.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <OpenAl/alut.h>
 
 
-//#include <OpenAL/al.h>
+#include <OpenAL/al.h>
 
-//#include <OpenAl/alc.h>
-//#include <OpenAl/alctypes.h>
-//#include <OpenAl/altypes.h>
+#include <OpenAl/alc.h>
+#include <OpenAl/alctypes.h>
+#include <OpenAl/altypes.h>
 
 //End of Mac Headers
 
@@ -332,6 +332,7 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 13:
 		started = true;
+		alSourcePlay(source[1]);
 		break;
 	default:
 		break;
@@ -891,7 +892,8 @@ void init() {
 	LoadGLTextures();
 	glEnable(GL_TEXTURE_2D);
 
-	glClearColor(0.52f, 0.81f, 1.0f, 0.0f);
+	glClearColor(0.52f, 0.2f, 1.0f, 0.0f);
+	//this was were the sky color is defined. original weak blue = glClearColor(0.52f, 0.81f, 1.0f, 0.0f);
 
 	glClearDepth(1.0);
 	glDepthFunc(GL_LEQUAL);
@@ -941,18 +943,18 @@ void init() {
 	//!!!!!!!!
 	//[Macintosh]   	alutLoadWAVFile("c.wav", &format, &data, &size, &freq);
 	//[Windows ]	alutLoadWAVFile("c.wav", &format, &data, &size, &freq, &al_bool);
-	//alutLoadWAVFile("Resource Files/sound8.wav",&format,&data,&size,&freq);
-	alutLoadWAVFile("Resource Files/sound8.wav", &format, &data, &size, &freq, &al_bool);
+	alutLoadWAVFile("Resource Files/sound8.wav",&format,&data,&size,&freq);
+	//alutLoadWAVFile("Resource Files/sound8.wav", &format, &data, &size, &freq, &al_bool);
 	alBufferData(buffer[0], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
-	//alutLoadWAVFile("Resource Files/bg.wav",&format,&data,&size,&freq);
-	alutLoadWAVFile("Resource Files/bg.wav", &format, &data, &size, &freq, &al_bool);
+	alutLoadWAVFile("Resource Files/bg.wav",&format,&data,&size,&freq);
+	//alutLoadWAVFile("Resource Files/bg.wav", &format, &data, &size, &freq, &al_bool);
 	alBufferData(buffer[1], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
-	//alutLoadWAVFile("Resource Files/sound4.wav",&format,&data,&size,&freq);
-	alutLoadWAVFile("Resource Files/sound4.wav", &format, &data, &size, &freq, &al_bool);
+	alutLoadWAVFile("Resource Files/sound4.wav",&format,&data,&size,&freq);
+	//alutLoadWAVFile("Resource Files/sound4.wav", &format, &data, &size, &freq, &al_bool);
 	alBufferData(buffer[2], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
@@ -999,7 +1001,6 @@ void init() {
 	game.Initialize();
 	//every 1 seconds calls the update function
 	glutTimerFunc(1000, update, 1);
-	alSourcePlay(source[1]);
 
 }
 
