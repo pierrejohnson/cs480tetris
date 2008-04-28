@@ -268,6 +268,7 @@ bool Tetris::moveDown() {
 	}
 	clearPlayMatrix();
 	makePlayMatrix(*currentBlock);
+	
 	return success;
 }
 
@@ -409,6 +410,7 @@ int Tetris::checkForLines() {
 			count++;
 			cout<<endl<<"LINE detected"<<endl;
 			LINECOMPLETED = true;
+			update();
 		//	cout<<"count:"<<count<<endl;
 		}
 	}
