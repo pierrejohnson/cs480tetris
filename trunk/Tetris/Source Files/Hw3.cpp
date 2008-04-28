@@ -2,29 +2,29 @@
 #include <cstdlib>       
 #include <ctime>       
 //PC Headers
-//#include "GL/glut.h"
-//#include "GL/glu.h"
-//#include "AL/al.h"
-//#include "AL/alut.h"
+#include "GL/glut.h"
+#include "GL/glu.h"
+#include "AL/al.h"
+#include "AL/alut.h"
 
 #include "Tetris.h"
 
 //mac headers
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
-#include <OpenGL/gl.h>
+//#include <GLUT/glut.h>
+//#include <OpenGL/glu.h>
+//#include <OpenGL/gl.h>
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <OpenAl/alut.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <OpenAl/alut.h>
 
 
-#include <OpenAL/al.h>
+//#include <OpenAL/al.h>
 
-#include <OpenAl/alc.h>
-#include <OpenAl/alctypes.h>
-#include <OpenAl/altypes.h>
+//#include <OpenAl/alc.h>
+//#include <OpenAl/alctypes.h>
+//#include <OpenAl/altypes.h>
 
 //End of Mac Headers
 
@@ -44,6 +44,7 @@ GLfloat eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 Camera camera;
 bool pressed = false;
 bool started = false;
+bool mode = false;
 
 //OpenAL sound variables
 #define NUM_BUFFERS 3
@@ -221,26 +222,26 @@ void LoadGLTextures() {
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, image3->sizeX, image3->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image3->data);
-	
+
 	Image *image4;
 
-		image4 = (Image *) malloc(sizeof(Image));
-		if (image4 == NULL) {
-			printf("Error allocating space for image");
-			exit(0);
-		}
+	image4 = (Image *) malloc(sizeof(Image));
+	if (image4 == NULL) {
+		printf("Error allocating space for image");
+		exit(0);
+	}
 
-		if (!ImageLoad("Resource Files/title.bmp", image4)) {
-			exit(1);
-		}
+	if (!ImageLoad("Resource Files/title.bmp", image4)) {
+		exit(1);
+	}
 
-		glGenTextures(4, &texture[3]);
-		glBindTexture(GL_TEXTURE_2D, texture[3]);
+	glGenTextures(4, &texture[3]);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, image4->sizeX, image4->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image4->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, image4->sizeX, image4->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image4->data);
 
 }
 ;
@@ -248,6 +249,24 @@ void LoadGLTextures() {
 void keyboard(unsigned char key, int x, int y) {
 
 	switch (key) {
+	case 'b':
+		eyex = eyey = eyez = centerx = centery = centerz = upx = upy = upz
+				= 0.0f;
+		eyex = -0.699978;
+		eyey = 1.6l;
+		eyez = 2.10419;
+		centerx = -0.699975l;
+		centery = 25.18;
+		centerz = -32.896;
+		upy = 1;
+		camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy,
+				upz);
+		if (mode)
+			mode = false;
+		else
+			mode = true;
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		break;
 	case '1'://complete a line
 		alSourcePlay(source[0]);
 		printf("1\n");
@@ -325,14 +344,14 @@ void keyboard(unsigned char key, int x, int y) {
 		eyez = 35.0f;
 		camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy,
 				upz);
-
+		mode = false;
+		glClearColor(0.52f, 0.2f, 1.0f, 0.0f);
 		break;
 	case ' ':
 		game.dropDown();
 		break;
 	case 13:
 		started = true;
-		alSourcePlay(source[1]);
 		break;
 	default:
 		break;
@@ -370,15 +389,15 @@ void spkeyboard(int key, int x, int y) {
 }
 
 //Draw Square Function
-void drawSquare(){
+void drawSquare() {
 	glBegin(GL_QUADS);
-	
+
 	glVertex3f(-0.5f, -0.5f, -0.5f);
-	
+
 	glVertex3f(-0.5f, -0.5f, 0.5f);
-	
+
 	glVertex3f( 0.5f, -0.5f, 0.5f);
-	
+
 	glVertex3f( 0.5f, -0.5f, -0.5f);
 	glEnd();
 }
@@ -452,9 +471,8 @@ void drawCube() {
 	glVertex3f( 0.5f, -0.5f, -0.5f);
 	glTexCoord2f(0.0f, 1.0f);
 	glVertex3f( 0.5f, -0.5f, 0.5f);
-	
+
 	glEnd();
-	
 
 }
 
@@ -466,8 +484,9 @@ void drawFrame() {
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glTranslated(i, 20, 0);
-		drawCube();
-		glColor3f(0, 0, 0);
+		if (!mode)
+			drawCube();
+		glColor3f(1, 1, 1);
 		glutWireCube(1.0f);
 		glPopMatrix();
 		//Shadow
@@ -484,8 +503,9 @@ void drawFrame() {
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glTranslated(i, 0, 0);
-		drawCube();
-		glColor3f(0, 0, 0);
+		if (!mode)
+			drawCube();
+		glColor3f(1, 1, 1);
 		glutWireCube(1.0f);
 		glPopMatrix();
 		//Shadow
@@ -504,8 +524,9 @@ void drawFrame() {
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
 		glTranslated(-6, i+10, 0);
-		drawCube();
-		glColor3f(0, 0, 0);
+		if (!mode)
+			drawCube();
+		glColor3f(1, 1, 1);
 		glutWireCube(1.0f);
 		glPopMatrix();
 		//Shadow
@@ -522,8 +543,9 @@ void drawFrame() {
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glTranslated(5, i+10, 0);
-		drawCube();
-		glColor3f(0, 0, 0);
+		if (!mode)
+			drawCube();
+		glColor3f(1, 1, 1);
 		glutWireCube(1.0f);
 		glPopMatrix();
 		//Shadow
@@ -542,8 +564,9 @@ void drawFrame() {
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(i, 12, 0);
-		drawCube();
-		glColor3f(0, 0, 0);
+		if (!mode)
+			drawCube();
+		glColor3f(1, 1, 1);
 		glutWireCube(1.0f);
 		glPopMatrix();
 		//Shadow
@@ -558,8 +581,9 @@ void drawFrame() {
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(i, 17, 0);
-		drawCube();
-		glColor3f(0, 0, 0);
+		if (!mode)
+			drawCube();
+		glColor3f(1, 1, 1);
 		glutWireCube(1.0f);
 		glPopMatrix();
 		//Shadow
@@ -577,8 +601,9 @@ void drawFrame() {
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(12, i, 0);
-		drawCube();
-		glColor3f(0, 0, 0);
+		if (!mode)
+			drawCube();
+		glColor3f(1, 1, 1);
 		glutWireCube(1.0f);
 		glPopMatrix();
 		//Shadow
@@ -595,24 +620,40 @@ void drawFrame() {
 }
 
 void display(void) {
+	if (mode) {
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		gluPerspective(140.0, (GLdouble)700/(GLdouble)700, 0.1f, 100.0f);
+		glMatrixMode(GL_MODELVIEW);
+	} else {
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		gluPerspective(40.0, (GLdouble)700/(GLdouble)700, 0.1f, 100.0f);
+		glMatrixMode(GL_MODELVIEW);
+	}
 	eyex = camera.PositionVector.x;
 	eyey = camera.PositionVector.y;
 	eyez = camera.PositionVector.z;
 	centerx = camera.ViewVector.x;
 	centery = camera.ViewVector.y;
 	centerz = camera.ViewVector.z;
-
+	cout<<eyex<<","<<eyey<<","<<eyez<<","<<centerx<<","<<centery<<","<<centerz
+			<<endl;
 	glEnable(GL_LINE_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
+	if (mode) {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+	}
 	if (started) {
 		glLineWidth(1.0);
 		//Lighting code
 		GLfloat mat_specular[] = { 0.7, 0.7, 0.7, 1.0 };
 		GLfloat mat_shininess[] = { 1.5 };
-		GLfloat light_position[] = { 0.0, 15.0, 35.0, 0.0 }; //{ 1.0, 4.0, 5.0, 0.0 };  - To show the variable light source. 
+		GLfloat light_position[] = { 0.0, 15.0, 50.0, 1.0 }; //{ 1.0, 4.0, 5.0, 0.0 };  - To show the variable light source. 
 		glShadeModel(GL_SMOOTH);
 
 		glEnable(GL_COLOR_MATERIAL);
@@ -646,6 +687,8 @@ void display(void) {
 		glBindTexture(GL_TEXTURE_2D, texture[2]);
 		glBegin(GL_QUADS);
 		glColor3f(1.0, 1.0, 1.0);
+		if (mode)
+			glColor3f(0.0, 0.0, 1.0);
 		for (int i = -250; i<250; i+=10) {//x
 			for (int j = -250; j<250; j+=10) {//y
 				glTexCoord2f(0.0f, 0.0f);
@@ -672,6 +715,7 @@ void display(void) {
 		for (int i = 0; i<4; i++) {
 			for (int j = 0; j<4; j++) {
 				int color = game.nextBlock->getBlockMatrix().getCell(i, j);
+
 				if (color ==1) { //cyan
 					glColor3f(0.0, 1.0, 1.0);
 				} else if (color ==2) { //blue
@@ -687,6 +731,7 @@ void display(void) {
 				} else if (color ==7) { //red
 					glColor3f(1.0, 0.0, 0.0);
 				}
+
 				GLfloat x = j+7;
 				GLfloat y = 16-i;
 				if (color>0 && color<8) {
@@ -703,7 +748,8 @@ void display(void) {
 					glPopMatrix();
 					//Shadow
 					glLoadIdentity();
-					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx,
+							upy, upz);
 					glPushMatrix();
 					glColor3f(0.2, 0.2, 0.2);
 					glTranslated(x, 0.01, -y-1);
@@ -720,21 +766,24 @@ void display(void) {
 				int color1 = game.getPlayCell(i, j);
 				GLfloat x = j-5;
 				GLfloat y = 20-i;
-				if (color1 ==1) { //cyan
-					glColor3f(0.0, 0.9, 0.9);
-				} else if (color1 ==2) { //blue
-					glColor3f(0.0, 0.0, 0.9);
-				} else if (color1 ==3) { //orange
-					glColor3f(0.9, 0.6, 0.0);
-				} else if (color1 ==4) { //yellow
-					glColor3f(0.9, 0.9, 0.0);
-				} else if (color1 ==5) { //green
-					glColor3f(0.0, 0.9, 0.0);
-				} else if (color1 ==6) { //purple
-					glColor3f(0.8, 0.1, 0.9);
-				} else if (color1 ==7) { //red
-					glColor3f(0.9, 0.0, 0.0);
-				}
+				if (!mode) {
+					if (color1 ==1) { //cyan
+						glColor3f(0.0, 1.0, 1.0);
+					} else if (color1 ==2) { //blue
+						glColor3f(0.0, 0.0, 1.0);
+					} else if (color1 ==3) { //orange
+						glColor3f(1.0, 0.5, 0.0);
+					} else if (color1 ==4) { //yellow
+						glColor3f(1.0, 1.0, 0.0);
+					} else if (color1 ==5) { //green
+						glColor3f(0.0, 1.0, 0.0);
+					} else if (color1 ==6) { //purple
+						glColor3f(0.8, 0.1, 0.9);
+					} else if (color1 ==7) { //red
+						glColor3f(1.0, 0.0, 0.0);
+					}
+				} else
+					glColor3f(log((1.0/15)*(i))-.25, 0.0, 0.9-(0.9/19)*(i));
 				if (color1>0 && color1<8) {
 					glLoadIdentity();
 					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx,
@@ -749,7 +798,8 @@ void display(void) {
 					glPopMatrix();
 					//Shadow
 					glLoadIdentity();
-					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx,
+							upy, upz);
 					glPushMatrix();
 					glColor3f(0.2, 0.2, 0.2);
 					glTranslated(x, 0.01, -y-1);
@@ -758,21 +808,24 @@ void display(void) {
 					//End Shadow
 
 				}
-				if (color ==1) { //cyan
-					glColor3f(0.0, 1.0, 1.0);
-				} else if (color ==2) { //blue
-					glColor3f(0.0, 0.0, 1.0);
-				} else if (color ==3) { //orange
-					glColor3f(1.0, 0.5, 0.0);
-				} else if (color ==4) { //yellow
-					glColor3f(1.0, 1.0, 0.0);
-				} else if (color ==5) { //green
-					glColor3f(0.0, 1.0, 0.0);
-				} else if (color ==6) { //purple
-					glColor3f(0.8, 0.1, 0.9);
-				} else if (color ==7) { //red
-					glColor3f(1.0, 0.0, 0.0);
-				}
+				if (!mode) {
+					if (color ==1) { //cyan
+						glColor3f(0.0, 1.0, 1.0);
+					} else if (color ==2) { //blue
+						glColor3f(0.0, 0.0, 1.0);
+					} else if (color ==3) { //orange
+						glColor3f(1.0, 0.5, 0.0);
+					} else if (color ==4) { //yellow
+						glColor3f(1.0, 1.0, 0.0);
+					} else if (color ==5) { //green
+						glColor3f(0.0, 1.0, 0.0);
+					} else if (color ==6) { //purple
+						glColor3f(0.8, 0.1, 0.9);
+					} else if (color ==7) { //red
+						glColor3f(1.0, 0.0, 0.0);
+					}
+				} else
+					glColor3f(log((1.0/15)*(i))-.25, 0.0, 0.9-(0.9/19)*(i));
 				if (color>0 && color<8) {
 					glLoadIdentity();
 					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx,
@@ -786,7 +839,8 @@ void display(void) {
 					glPopMatrix();
 					//Shadow
 					glLoadIdentity();
-					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx,
+							upy, upz);
 					glPushMatrix();
 					glColor3f(0.2, 0.2, 0.2);
 					glTranslated(x, 0.01, -y-1);
@@ -797,9 +851,9 @@ void display(void) {
 
 			}
 		}
-	}else{
+	} else {
 		glLoadIdentity();
-		glColor3f(1,1,1);
+		glColor3f(1, 1, 1);
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glBindTexture(GL_TEXTURE_2D, texture[3]);
 		glBegin(GL_QUADS);
@@ -812,74 +866,76 @@ void display(void) {
 		glTexCoord2f(0.0f, 1.0f);
 		glVertex3f( -15.0f, 25.0f, 0.0f);
 		glEnd();
-		
+
 		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//glEnable(GL_BLEND);
 		glEnable(GL_LINE_SMOOTH);
 		glLineWidth(5.0);
 		char *message;
 		glLoadIdentity();
-		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx+0.05, upy, upz);
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx+0.05, upy,
+				upz);
 		glPushMatrix();
-		glColor3f(0,0,0);
-		glTranslatef(-10,14,0);
-		glScaled(0.01f,0.01f,0.01f);
-		for(message = "Press Enter to Start";*message;message++){
+		glColor3f(0, 0, 0);
+		glTranslatef(-9, 8, 0);
+		glScaled(0.008f, 0.008f, 0.008f);
+		for (message = "Press Enter to Start"; *message; message++) {
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
 		}
 		glPopMatrix();
-		
+
 		glLoadIdentity();
-		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx-0.1, upy, upz);
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx-0.1, upy,
+				upz);
 		glPushMatrix();
-		glColor3f(0,0,0);
-		glTranslatef(-9,19,0);
-		glScaled(0.01f,0.01f,0.01f);
-		for(message = "CS480: 3-D Tetris";*message;message++){
+		glColor3f(0, 0, 0);
+		glTranslatef(-2, 19, 0);
+		glScaled(0.007f, 0.007f, 0.007f);
+		for (message = "CS480: 3-D Tetris"; *message; message++) {
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
 		}
 		glPopMatrix();
-		
-		glLoadIdentity();
-		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
-		glPushMatrix();
-		glColor3f(0,0,0);
-		glTranslatef(-7,9,0);
-		glScaled(0.01f,0.01f,0.01f);
-		for(message = "Jonathan  Chan";*message;message++){
-			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
-		}
-		glPopMatrix();
-		
+
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
-		glColor3f(0,0,0);
-		glTranslatef(-7,6,0);
-		glScaled(0.01f,0.01f,0.01f);
-		for(message = "Pierre Johnson";*message;message++){
+		glColor3f(0, 0, 0);
+		glTranslatef(-12, 2, 0);
+		glScaled(0.005f, 0.005f, 0.005f);
+		for (message = "Jonathan  Chan"; *message; message++) {
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
 		}
 		glPopMatrix();
-		
+
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
-		glColor3f(0,0,0);
-		glTranslatef(-7,3,0);
-		glScaled(0.01f,0.01f,0.01f);
-		for(message = "Daniel Ramirez";*message;message++){
+		glColor3f(0, 0, 0);
+		glTranslatef(-12, 1, 0);
+		glScaled(0.005f, 0.005f, 0.005f);
+		for (message = "Pierre Johnson"; *message; message++) {
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
 		}
 		glPopMatrix();
-		
+
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
-		glColor3f(0,0,0);
-		glTranslatef(-5.5,0,0);
-		glScaled(0.01f,0.01f,0.01f);
-		for(message = "Daniel Wong";*message;message++){
+		glColor3f(0, 0, 0);
+		glTranslatef(-12, 0, 0);
+		glScaled(0.005f, 0.005f, 0.005f);
+		for (message = "Daniel Ramirez"; *message; message++) {
+			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
+		}
+		glPopMatrix();
+
+		glLoadIdentity();
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glPushMatrix();
+		glColor3f(0, 0, 0);
+		glTranslatef(-12, -1, 0);
+		glScaled(0.005f, 0.005f, 0.005f);
+		for (message = "Daniel Wong"; *message; message++) {
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *message);
 		}
 		glPopMatrix();
@@ -893,7 +949,6 @@ void init() {
 	glEnable(GL_TEXTURE_2D);
 
 	glClearColor(0.52f, 0.2f, 1.0f, 0.0f);
-	//this was were the sky color is defined. original weak blue = glClearColor(0.52f, 0.81f, 1.0f, 0.0f);
 
 	glClearDepth(1.0);
 	glDepthFunc(GL_LEQUAL);
@@ -943,18 +998,21 @@ void init() {
 	//!!!!!!!!
 	//[Macintosh]   	alutLoadWAVFile("c.wav", &format, &data, &size, &freq);
 	//[Windows ]	alutLoadWAVFile("c.wav", &format, &data, &size, &freq, &al_bool);
-	alutLoadWAVFile("Resource Files/sound8.wav",&format,&data,&size,&freq);
-	//alutLoadWAVFile("Resource Files/sound8.wav", &format, &data, &size, &freq, &al_bool);
+	//alutLoadWAVFile("Resource Files/sound8.wav",&format,&data,&size,&freq);
+	alutLoadWAVFile("Resource Files/sound8.wav", &format, &data, &size, &freq,
+			&al_bool);
 	alBufferData(buffer[0], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
-	alutLoadWAVFile("Resource Files/bg.wav",&format,&data,&size,&freq);
-	//alutLoadWAVFile("Resource Files/bg.wav", &format, &data, &size, &freq, &al_bool);
+	//alutLoadWAVFile("Resource Files/bg.wav",&format,&data,&size,&freq);
+	alutLoadWAVFile("Resource Files/bg.wav", &format, &data, &size, &freq,
+			&al_bool);
 	alBufferData(buffer[1], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
-	alutLoadWAVFile("Resource Files/sound4.wav",&format,&data,&size,&freq);
-	//alutLoadWAVFile("Resource Files/sound4.wav", &format, &data, &size, &freq, &al_bool);
+	//alutLoadWAVFile("Resource Files/sound4.wav",&format,&data,&size,&freq);
+	alutLoadWAVFile("Resource Files/sound4.wav", &format, &data, &size, &freq,
+			&al_bool);
 	alBufferData(buffer[2], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
@@ -1001,6 +1059,7 @@ void init() {
 	game.Initialize();
 	//every 1 seconds calls the update function
 	glutTimerFunc(1000, update, 1);
+	alSourcePlay(source[1]);
 
 }
 
@@ -1012,7 +1071,7 @@ void reshape(int x, int y) {
 	//Set a new projection matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(40.0, (GLdouble)x/(GLdouble)y, 5, 100.0);
+	gluPerspective(40.0, (GLdouble)x/(GLdouble)y, 0.1, 100.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, x, y); //Use the whole window for rendering
