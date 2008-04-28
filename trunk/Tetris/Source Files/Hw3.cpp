@@ -2,30 +2,30 @@
 #include <cstdlib>       
 #include <ctime>       
 //PC Headers
-//#include "GL/glut.h"
-//#include "GL/glu.h"
-//#include "AL/al.h"
-//#include "AL/alut.h"
+#include "GL/glut.h"
+#include "GL/glu.h"
+#include "AL/al.h"
+#include "AL/alut.h"
 
 #include "Tetris.h"
 
 //mac headers
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
-#include <OpenGL/gl.h>
+//#include <GLUT/glut.h>
+//#include <OpenGL/glu.h>
+//#include <OpenGL/gl.h>
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <OpenAl/alut.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <OpenAl/alut.h>
 
 
 
-#include <OpenAL/al.h>
+//#include <OpenAL/al.h>
 
-#include <OpenAl/alc.h>
-#include <OpenAl/alctypes.h>
-#include <OpenAl/altypes.h>
+//#include <OpenAl/alc.h>
+//#include <OpenAl/alctypes.h>
+//#include <OpenAl/altypes.h>
 
 //End of Mac Headers
 
@@ -72,6 +72,7 @@ ALuint  environment[NUM_ENVIRONMENTS];
 ALsizei size,freq;
 ALenum  format;
 ALvoid  *data;
+ALboolean al_bool;
 //end of OpenAL sound variables
 
 //Timer function
@@ -744,15 +745,18 @@ void init()
 	//!!!!!!!!
 	//[Macintosh]   	alutLoadWAVFile("c.wav", &format, &data, &size, &freq);
 	//[Windows ]	alutLoadWAVFile("c.wav", &format, &data, &size, &freq, &al_bool);
-    alutLoadWAVFile("sound8.wav",&format,&data,&size,&freq);
+    //alutLoadWAVFile("sound8.wav",&format,&data,&size,&freq);
+    alutLoadWAVFile("sound8.wav",&format,&data,&size,&freq,&al_bool);
     alBufferData(buffer[0],format,data,size,freq);
     alutUnloadWAV(format,data,size,freq);
     
-    alutLoadWAVFile("bg.wav",&format,&data,&size,&freq);
+    //alutLoadWAVFile("bg.wav",&format,&data,&size,&freq);
+    alutLoadWAVFile("bg.wav",&format,&data,&size,&freq,&al_bool);
     alBufferData(buffer[1],format,data,size,freq);
     alutUnloadWAV(format,data,size,freq);
 
-    alutLoadWAVFile("sound4.wav",&format,&data,&size,&freq);
+    //alutLoadWAVFile("sound4.wav",&format,&data,&size,&freq);
+    alutLoadWAVFile("sound4.wav",&format,&data,&size,&freq,&al_bool);
     alBufferData(buffer[2],format,data,size,freq);
     alutUnloadWAV(format,data,size,freq);
 
