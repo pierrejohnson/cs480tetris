@@ -1,32 +1,33 @@
 #include <iostream>       
 #include <cstdlib>       
 #include <ctime>       
-#include "GL/glut.h"
-#include "GL/glu.h"
+//PC Headers
+//#include "GL/glut.h"
+//#include "GL/glu.h"
+//#include "AL/al.h"
+//#include "AL/alut.h"
 
 #include "Tetris.h"
 
 //mac headers
-//#include <GLUT/glut.h>
-//#include <OpenGL/glu.h>
-//#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/gl.h>
 
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <OpenAL/alut.h>
-//#include <OpenAL/al.h>
-//#include "OpenAl/alc.h"
-//#include "OpenAl/alctypes.h"
-//#include "OpenAl/altypes.h"
-
-
+#include <openal/alut.h>
+#include "OpenAL/al.h"
+#include <OpenAL/al.h>
+#include "OpenAl/alc.h"
+#include "OpenAl/alctypes.h"
+#include "OpenAl/altypes.h"
 
 //End of Mac Headers
 
 #include "Camera.h"
-//#include "AL/al.h"
-//#include "AL/alut.h"
+
 
 
 //Global Variables
@@ -43,14 +44,49 @@ GLfloat eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 Camera camera;
 bool pressed = false;
 
+//OpenAL sound variables
+#define NUM_BUFFERS 3
+#define NUM_SOURCES 3
+#define NUM_ENVIRONMENTS 1
+
+ALfloat listenerPos[]={0.0,0.0,0.0};		//original position of listener
+ALfloat listenerVel[]={0.0,0.0,0.0};		// starting listener velocity
+ALfloat listenerOri[]={0.0,0.0,1.0, 0.0,1.0,0.0};//???
+
+ALfloat source0Pos[]={ 0.0, 0.0, 0.0};     //sound position
+ALfloat source0Vel[]={ 0.0, 0.0, 0.0};      //sound velocity
+
+ALfloat source1Pos[]={ 0.0, 0.0, 0.0};
+ALfloat source1Vel[]={ 0.0, 0.0, 0.0};
+
+ALfloat source2Pos[]={ 0.0, 0.0, 0.0};
+ALfloat source2Vel[]={ 0.0, 0.0, 0.0};
+
+//this is where the sound is stored
+ALuint  buffer[NUM_BUFFERS];
+ALuint  source[NUM_SOURCES];
+ALuint  environment[NUM_ENVIRONMENTS];
+ALsizei size,freq;
+ALenum  format;
+ALvoid  *data;
+//end of OpenAL sound variables
+
+//Timer function
+//Calls the game update function
 void update(int value) {
     if (!(pause1)) {
         //game.test();
         if (!game.update())
             pause1 = true;
     }
+    if (game.linecompleted()){
+    	alSourcePlay(source[0]);
+    	game.resetlinecompleted();
+    }
+    
     glutPostRedisplay();
     glutTimerFunc(1000, update, 1);
+  
 }
 
 int ImageLoad(char *filename, Image *image) {
@@ -190,6 +226,18 @@ void LoadGLTextures() {
 void keyboard(unsigned char key, int x, int y) {
 
 	switch (key) {
+	case '1'://complete a line
+				alSourcePlay(source[0]);
+	                        printf("1\n");
+	                        break;
+	case '2':// background music
+				alSourcePlay(source[1]);
+	                        printf("2\n");
+	                        break;
+	case '3':// rotating a piece
+				alSourcePlay(source[2]);
+	                        printf("3\n");
+	                        break;
 	case 'a':
 		camera.strafeCamera(-0.01);
 
@@ -281,6 +329,7 @@ void spkeyboard(int key, int x, int y) {
 		break;
 	case GLUT_KEY_UP:
 		game.rotateCCW();
+		alSourcePlay(source[2]);
 
 		break;
 	case GLUT_KEY_DOWN:
@@ -295,7 +344,6 @@ void spkeyboard(int key, int x, int y) {
 	glutPostRedisplay();
 
 }
-
 
 
 //Draw Cube function
@@ -348,7 +396,7 @@ void drawCube() {
 	glTexCoord2f(1.0f, 1.0f);
 	glVertex3f( 0.5f, -0.5f, 0.5f);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f( 0.5f, 0.5f, 0.5f);
+
 
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex3f(-0.5f, 0.5f, -0.5f);
@@ -643,6 +691,7 @@ void init()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity(); 
 
+
 	gluPerspective(40.0, (GLdouble)700/(GLdouble)700, 0.1f, 100.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, 700, 700); 
@@ -653,10 +702,100 @@ void init()
 	eyey = 10.0f;
 	eyez = 35.0f;
 	camera.setCamera(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+	
+	/*OpenAL stuff (sound)*/
+	//
+	//
+	//
+	//
+	//
+	//    
+	alutInit(0, NULL);
+    alListenerfv(AL_POSITION,listenerPos);
+    alListenerfv(AL_VELOCITY,listenerVel);
+    alListenerfv(AL_ORIENTATION,listenerOri);  
+
+	alGetError(); // clear any error messages
+
+
+	// Generate buffers, or else no sound will happen!
+	alGenBuffers(NUM_BUFFERS, buffer);
+
+	if(alGetError() != AL_NO_ERROR) 
+	{
+    	printf("- Error creating buffers !!\n");
+    	exit(1);
+	}
+	else
+	{
+    	printf("init() - No errors yet.");
+	}
+
+	
+	
+	//loads the wav file
+	//!!!!!!!!
+	//[Macintosh]   	alutLoadWAVFile("c.wav", &format, &data, &size, &freq);
+	//[Windows ]	alutLoadWAVFile("c.wav", &format, &data, &size, &freq, &al_bool);
+    alutLoadWAVFile("sound8.wav",&format,&data,&size,&freq);
+    alBufferData(buffer[0],format,data,size,freq);
+    alutUnloadWAV(format,data,size,freq);
+    
+    alutLoadWAVFile("bg.wav",&format,&data,&size,&freq);
+    alBufferData(buffer[1],format,data,size,freq);
+    alutUnloadWAV(format,data,size,freq);
+
+    alutLoadWAVFile("sound4.wav",&format,&data,&size,&freq);
+    alBufferData(buffer[2],format,data,size,freq);
+    alutUnloadWAV(format,data,size,freq);
+
+    alGetError(); /* clear error */
+    alGenSources(NUM_SOURCES, source);
+    if(alGetError() != AL_NO_ERROR) 
+    {
+        printf("- Error creating sources !!\n");
+        exit(2);
+    }
+    else
+    {
+        printf("init - no errors after alGenSources\n");
+    }
+    alSourcef(source[0],AL_PITCH,1.0f);
+    alSourcef(source[0],AL_GAIN,1.0f);
+    alSourcefv(source[0],AL_POSITION,source0Pos);
+    alSourcefv(source[0],AL_VELOCITY,source0Vel);
+    alSourcei(source[0],AL_BUFFER,buffer[0]);
+    alSourcei(source[0],AL_LOOPING,AL_FALSE);
+
+    alSourcef(source[1],AL_PITCH,1.0f);
+    alSourcef(source[1],AL_GAIN,1.0f);
+    alSourcefv(source[1],AL_POSITION,source1Pos);
+    alSourcefv(source[1],AL_VELOCITY,source1Vel);
+    alSourcei(source[1],AL_BUFFER,buffer[1]);
+    alSourcei(source[1],AL_LOOPING,AL_TRUE);
+
+    alSourcef(source[2],AL_PITCH,1.0f);
+    alSourcef(source[2],AL_GAIN,1.0f);
+    alSourcefv(source[2],AL_POSITION,source2Pos);
+    alSourcefv(source[2],AL_VELOCITY,source2Vel);
+    alSourcei(source[2],AL_BUFFER,buffer[2]);
+    alSourcei(source[2],AL_LOOPING,AL_FALSE);
+
+	//
+	//
+	//
+ 
+	
+	//finally set the sound properties!
+	//
+	//
+	//
+	/* end of OpenAL stuff (sound)*/
+
 	game.Initialize();
 	//every 1 seconds calls the update function
 	glutTimerFunc(1000, update, 1);
-
+	alSourcePlay(source[1]);
 
 }
 
@@ -698,6 +837,7 @@ void mouseMovement(int x, int y) {
 //Sets up window and callback funcions
 int main(int argc, char **argv) {
 	
+	alutInit(&argc, argv) ; //for sound
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
 	glutInitWindowSize(700, 700);
