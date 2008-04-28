@@ -230,7 +230,7 @@ void LoadGLTextures() {
 			exit(0);
 		}
 
-		if (!ImageLoad("Resource Files/brick.bmp", image4)) {
+		if (!ImageLoad("Resource Files/title.bmp", image4)) {
 			exit(1);
 		}
 
@@ -368,6 +368,20 @@ void spkeyboard(int key, int x, int y) {
 
 }
 
+//Draw Square Function
+void drawSquare(){
+	glBegin(GL_QUADS);
+	
+	glVertex3f(-0.5f, -0.5f, -0.5f);
+	
+	glVertex3f(-0.5f, -0.5f, 0.5f);
+	
+	glVertex3f( 0.5f, -0.5f, 0.5f);
+	
+	glVertex3f( 0.5f, -0.5f, -0.5f);
+	glEnd();
+}
+
 //Draw Cube function
 
 void drawCube() {
@@ -437,7 +451,9 @@ void drawCube() {
 	glVertex3f( 0.5f, -0.5f, -0.5f);
 	glTexCoord2f(0.0f, 1.0f);
 	glVertex3f( 0.5f, -0.5f, 0.5f);
+	
 	glEnd();
+	
 
 }
 
@@ -453,6 +469,15 @@ void drawFrame() {
 		glColor3f(0, 0, 0);
 		glutWireCube(1.0f);
 		glPopMatrix();
+		//Shadow
+		glLoadIdentity();
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glPushMatrix();
+		glColor3f(0.2, 0.2, 0.2);
+		glTranslated(i, 0.01, -1);
+		drawSquare();
+		glPopMatrix();
+		//End Shadow
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
@@ -462,6 +487,15 @@ void drawFrame() {
 		glColor3f(0, 0, 0);
 		glutWireCube(1.0f);
 		glPopMatrix();
+		//Shadow
+		glLoadIdentity();
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glPushMatrix();
+		glColor3f(0.2, 0.2, 0.2);
+		glTranslated(i, 0.01, -21);
+		drawSquare();
+		glPopMatrix();
+		//End Shadow
 	}
 	for (int i = -10; i<10; i++) {
 		glColor3f(1.0, 1.0, 1.0);
@@ -473,16 +507,33 @@ void drawFrame() {
 		glColor3f(0, 0, 0);
 		glutWireCube(1.0f);
 		glPopMatrix();
+		//Shadow
 		glLoadIdentity();
 		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 		glPushMatrix();
-
+		glColor3f(0.2, 0.2, 0.2);
+		glTranslated(-6, 0.01, -i-11);
+		drawSquare();
+		glPopMatrix();
+		//End Shadow
+		glLoadIdentity();
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glTranslated(5, i+10, 0);
 		drawCube();
 		glColor3f(0, 0, 0);
 		glutWireCube(1.0f);
 		glPopMatrix();
+		//Shadow
+		glLoadIdentity();
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glPushMatrix();
+		glColor3f(0.2, 0.2, 0.2);
+		glTranslated(5, 0.01, -i-11);
+		drawSquare();
+		glPopMatrix();
+		//End Shadow
 	}
 	glLoadIdentity();
 	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
@@ -494,7 +545,15 @@ void drawFrame() {
 		glColor3f(0, 0, 0);
 		glutWireCube(1.0f);
 		glPopMatrix();
-
+		//Shadow
+		glLoadIdentity();
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glPushMatrix();
+		glColor3f(0.2, 0.2, 0.2);
+		glTranslated(i, 0.01, -13);
+		drawSquare();
+		glPopMatrix();
+		//End Shadow
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslated(i, 17, 0);
@@ -502,6 +561,15 @@ void drawFrame() {
 		glColor3f(0, 0, 0);
 		glutWireCube(1.0f);
 		glPopMatrix();
+		//Shadow
+		glLoadIdentity();
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glPushMatrix();
+		glColor3f(0.2, 0.2, 0.2);
+		glTranslated(i, 0.01, -18);
+		drawSquare();
+		glPopMatrix();
+		//End Shadow
 	}
 
 	for (int i = 13; i<17; i++) {
@@ -512,6 +580,15 @@ void drawFrame() {
 		glColor3f(0, 0, 0);
 		glutWireCube(1.0f);
 		glPopMatrix();
+		//Shadow
+		glLoadIdentity();
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+		glPushMatrix();
+		glColor3f(0.2, 0.2, 0.2);
+		glTranslated(12, 0.01, -i-1);
+		drawSquare();
+		glPopMatrix();
+		//End Shadow
 	}
 
 }
@@ -527,13 +604,14 @@ void display(void) {
 	glEnable(GL_LINE_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
 	if (started) {
 		glLineWidth(1.0);
 		//Lighting code
 		GLfloat mat_specular[] = { 0.7, 0.7, 0.7, 1.0 };
 		GLfloat mat_shininess[] = { 1.5 };
-		GLfloat light_position[] = { 1.0, 15.0, 50.0, 1.0 }; //{ 1.0, 4.0, 5.0, 0.0 };  - To show the variable light source. 
+		GLfloat light_position[] = { 0.0, 15.0, 35.0, 0.0 }; //{ 1.0, 4.0, 5.0, 0.0 };  - To show the variable light source. 
 		glShadeModel(GL_SMOOTH);
 
 		glEnable(GL_COLOR_MATERIAL);
@@ -622,6 +700,15 @@ void display(void) {
 					glColor3f(0, 0, 0);
 					glutWireCube(1.0f);
 					glPopMatrix();
+					//Shadow
+					glLoadIdentity();
+					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+					glPushMatrix();
+					glColor3f(0.2, 0.2, 0.2);
+					glTranslated(x, 0.01, -y-1);
+					drawSquare();
+					glPopMatrix();
+					//End Shadow
 				}
 			}
 		}
@@ -659,6 +746,15 @@ void display(void) {
 					glutWireCube(1.0f);
 
 					glPopMatrix();
+					//Shadow
+					glLoadIdentity();
+					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+					glPushMatrix();
+					glColor3f(0.2, 0.2, 0.2);
+					glTranslated(x, 0.01, -y-1);
+					drawSquare();
+					glPopMatrix();
+					//End Shadow
 
 				}
 				if (color ==1) { //cyan
@@ -686,8 +782,16 @@ void display(void) {
 					drawCube();
 					glColor3f(0, 0, 0);
 					glutWireCube(1.0f);
-
 					glPopMatrix();
+					//Shadow
+					glLoadIdentity();
+					gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+					glPushMatrix();
+					glColor3f(0.2, 0.2, 0.2);
+					glTranslated(x, 0.01, -y-1);
+					drawSquare();
+					glPopMatrix();
+					//End Shadow
 				}
 
 			}
@@ -708,8 +812,8 @@ void display(void) {
 		glVertex3f( -15.0f, 25.0f, 0.0f);
 		glEnd();
 		
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glEnable(GL_BLEND);
 		glEnable(GL_LINE_SMOOTH);
 		glLineWidth(5.0);
 		char *message;
@@ -837,18 +941,18 @@ void init() {
 	//!!!!!!!!
 	//[Macintosh]   	alutLoadWAVFile("c.wav", &format, &data, &size, &freq);
 	//[Windows ]	alutLoadWAVFile("c.wav", &format, &data, &size, &freq, &al_bool);
-	//alutLoadWAVFile("sound8.wav",&format,&data,&size,&freq);
-	alutLoadWAVFile("sound8.wav", &format, &data, &size, &freq, &al_bool);
+	//alutLoadWAVFile("Resource Files/sound8.wav",&format,&data,&size,&freq);
+	alutLoadWAVFile("Resource Files/sound8.wav", &format, &data, &size, &freq, &al_bool);
 	alBufferData(buffer[0], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
-	//alutLoadWAVFile("bg.wav",&format,&data,&size,&freq);
-	alutLoadWAVFile("bg.wav", &format, &data, &size, &freq, &al_bool);
+	//alutLoadWAVFile("Resource Files/bg.wav",&format,&data,&size,&freq);
+	alutLoadWAVFile("Resource Files/bg.wav", &format, &data, &size, &freq, &al_bool);
 	alBufferData(buffer[1], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
-	//alutLoadWAVFile("sound4.wav",&format,&data,&size,&freq);
-	alutLoadWAVFile("sound4.wav", &format, &data, &size, &freq, &al_bool);
+	//alutLoadWAVFile("Resource Files/sound4.wav",&format,&data,&size,&freq);
+	alutLoadWAVFile("Resource Files/sound4.wav", &format, &data, &size, &freq, &al_bool);
 	alBufferData(buffer[2], format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);
 
