@@ -1,5 +1,6 @@
 #include "Tetris.h"
 
+bool LINECOMPLETED= false;
 //Test functionality
 void Tetris::test() {
 	clearPlayMatrix();
@@ -24,6 +25,7 @@ Tetris::Tetris() {
 
 //Initialize
 void Tetris::Initialize() {
+	
 	width = 10;
 	height = 20;
 	srand(time(0));
@@ -52,6 +54,15 @@ void Tetris::clearFieldMatrix() {
 		}
 	}
 }
+
+bool Tetris::linecompleted() {
+	return LINECOMPLETED;
+}
+
+void Tetris::resetlinecompleted() {
+		LINECOMPLETED= false;
+}
+
 
 //create a copy of an empty matrix with our block into it
 //Make draw matrix
@@ -396,7 +407,8 @@ int Tetris::checkForLines() {
 		}
 		if (line){
 			count++;
-		//	cout<<endl<<"LINE detected"<<endl;
+			cout<<endl<<"LINE detected"<<endl;
+			LINECOMPLETED = true;
 		//	cout<<"count:"<<count<<endl;
 		}
 	}
@@ -404,6 +416,8 @@ int Tetris::checkForLines() {
 }
 
 void Tetris::removeLines() {
+	
+		cout<<"removing a line";
 	bool line = true;
 	for (int i = 19; i>=0; i--) {
 		line = true;
