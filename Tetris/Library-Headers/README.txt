@@ -1,0 +1,1 @@
+The only additional library's needed are the ones for openAL. If your using Cygwin (not tested) or MinGW copy the libalut.a and libopenal32.a file to your lib directory. Similarly, copy the AL folder into you include directory. You may also need to copy the .dll files to your system32 directory.

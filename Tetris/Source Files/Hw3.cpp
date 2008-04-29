@@ -352,6 +352,7 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 13:
 		started = true;
+		alSourcePlay(source[1]);
 		break;
 	default:
 		break;
@@ -1059,7 +1060,7 @@ void init() {
 	game.Initialize();
 	//every 1 seconds calls the update function
 	glutTimerFunc(1000, update, 1);
-	alSourcePlay(source[1]);
+	//alSourcePlay(source[1]);
 
 }
 

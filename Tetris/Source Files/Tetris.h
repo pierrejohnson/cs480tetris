@@ -63,7 +63,7 @@ public:
 	void shiftDown(int);
 	//Update 
 	bool update();
-	blockType Tetris::randBlk();
+	blockType randBlk();
 	//resets the global bool Var "LINECOMPLETED" used to start sound
 	void resetlinecompleted();
 	//returns the value of LINECOMPLETED (true is a line has been completed) and rests it to false.

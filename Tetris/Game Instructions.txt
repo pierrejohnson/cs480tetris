@@ -1,0 +1,22 @@
+3D Tetris Gameplay Instructions
+
+Game Mode:
+m- resets to normal playing mode
+b- sets to Chromadepth mode
+p- pause
+
+Game Control:
+Left- Move block left
+Right- Move block right
+Up- Rotate block
+Down- Move block down
+Space- Drop block down
+
+Camear Control:
+a- Move Camera to the Left
+d- Move Camera to the Right
+w- Move Camera Forward
+s- Move Camera Backwards
+r- Move Camera Up
+f- Move Camera Down
+To Look around, click and drag the mouse anytwhere in the window

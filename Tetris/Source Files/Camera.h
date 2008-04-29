@@ -1,7 +1,7 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
-#include <gl\glut.h>
+#include <GL/glut.h>
 //#include <GLUT/glut.h>
 //#include <OpenGL/glu.h>
 //#include <GLUT/glut.h>
